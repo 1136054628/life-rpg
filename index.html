@@ -6,7 +6,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="人生RPG">
-<link rel="manifest" href="data:application/json,{}">
+<link rel="manifest" href="manifest.json">
 <title>🎮 人生RPG</title>
 <style>
 :root {
@@ -1037,6 +1037,7 @@ console.log('🎮 人生RPG 已就绪');
 console.log('📊 累计打卡', DATA.days.length, '天');
 console.log('🏆 解锁成就', DATA.unlockedAch.length, '个');
 console.log('💡 在手机浏览器打开 → 添加到主屏幕 → 像App一样使用');
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
 </script>
 </body>
 </html>

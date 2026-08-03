@@ -1,0 +1,1042 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="人生RPG">
+<link rel="manifest" href="data:application/json,{}">
+<title>🎮 人生RPG</title>
+<style>
+:root {
+  --bg: #0f0f1a;
+  --card: #1a1a2e;
+  --accent: #e8b830;
+  --gold: #e8b830;
+  --silver: #a0a8b8;
+  --bronze: #c47a38;
+  --text: #e0d8c8;
+  --muted: #7a7a8a;
+  --green: #4caf84;
+  --red: #e05555;
+  --blue: #5b9bd5;
+  --xp: #7ec8e3;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  font-family: -apple-system, "SF Pro", "PingFang SC", "Microsoft YaHei", sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  -webkit-user-select: none;
+}
+header {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  padding: 16px 20px;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  border-bottom: 1px solid rgba(232,184,48,.2);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.header-left h1 { font-size: 20px; font-weight: 700; }
+.header-left .title-badge {
+  display: inline-block;
+  margin-top: 4px;
+  font-size: 13px;
+  color: var(--accent);
+  background: rgba(232,184,48,.12);
+  padding: 2px 10px;
+  border-radius: 20px;
+}
+.header-right {
+  text-align: right;
+  font-size: 12px;
+  color: var(--muted);
+}
+.header-right .xp { color: var(--xp); font-weight: 700; font-size: 16px; }
+.header-right .streak { color: var(--accent); }
+
+.tabs {
+  display: flex;
+  gap: 4px;
+  padding: 12px 16px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.tabs::-webkit-scrollbar { display: none; }
+.tab {
+  flex-shrink: 0;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  border: 1px solid rgba(255,255,255,.1);
+  background: var(--card);
+  color: var(--muted);
+  cursor: pointer;
+  transition: .2s;
+}
+.tab.active { background: var(--accent); color: #1a1a2e; border-color: var(--accent); }
+
+main { padding: 0 16px 100px; }
+
+/* Check-in form */
+.form-section { display: none; }
+.form-section.active { display: block; }
+
+.card {
+  background: var(--card);
+  border-radius: 14px;
+  padding: 16px;
+  margin-bottom: 14px;
+  border: 1px solid rgba(255,255,255,.06);
+}
+.card h3 { font-size: 15px; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+.card h3 .emoji { font-size: 20px; }
+
+.check-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 0;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.check-row:active { opacity: .7; }
+.check-row .box {
+  width: 24px; height: 24px;
+  border-radius: 6px;
+  border: 2px solid rgba(255,255,255,.25);
+  flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  transition: .15s;
+  font-size: 14px;
+}
+.check-row .box.checked {
+  background: var(--green);
+  border-color: var(--green);
+}
+.check-row .label { flex:1; font-size: 14px; }
+.check-row .xp-badge {
+  font-size: 11px;
+  color: var(--xp);
+  background: rgba(126,200,227,.12);
+  padding: 2px 8px;
+  border-radius: 10px;
+}
+
+.divider {
+  height: 1px;
+  background: rgba(255,255,255,.06);
+  margin: 8px 0;
+}
+
+input[type="text"], input[type="number"], textarea {
+  width: 100%;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,.12);
+  background: rgba(255,255,255,.04);
+  color: var(--text);
+  font-size: 14px;
+  font-family: inherit;
+  margin-top: 6px;
+  -webkit-appearance: none;
+}
+textarea { min-height: 60px; resize: vertical; }
+input:focus, textarea:focus { outline: none; border-color: var(--accent); }
+
+.btn {
+  display: block;
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: .2s;
+  text-align: center;
+}
+.btn-submit {
+  background: var(--accent);
+  color: #1a1a2e;
+  margin-top: 8px;
+}
+.btn-submit:active { transform: scale(.97); opacity: .85; }
+.btn-backup {
+  background: transparent;
+  color: var(--muted);
+  border: 1px solid rgba(255,255,255,.15);
+  margin-top: 8px;
+  font-size: 13px;
+  padding: 10px;
+}
+
+/* Achievements tab */
+.ach-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.ach-card {
+  background: var(--card);
+  border-radius: 12px;
+  padding: 12px;
+  text-align: center;
+  border: 1px solid rgba(255,255,255,.06);
+  transition: .3s;
+}
+.ach-card.locked { opacity: .35; filter: grayscale(1); }
+.ach-card.unlocked { border-color: var(--accent); animation: popIn .4s ease; }
+@keyframes popIn {
+  0% { transform: scale(.9); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+.ach-card .icon { font-size: 32px; margin-bottom: 4px; }
+.ach-card .name { font-size: 12px; font-weight: 600; }
+.ach-card .rarity { font-size: 10px; color: var(--muted); margin-top: 2px; }
+.ach-card .cond { font-size: 10px; color: var(--muted); margin-top: 4px; line-height: 1.3; }
+.ach-card .progress {
+  width: 100%; height: 3px;
+  background: rgba(255,255,255,.08);
+  border-radius: 4px;
+  margin-top: 6px;
+  overflow: hidden;
+}
+.ach-card .progress .bar {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 4px;
+  transition: .3s;
+}
+
+/* Stats tab */
+.stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.stat-card {
+  background: var(--card);
+  border-radius: 12px;
+  padding: 14px;
+  text-align: center;
+  border: 1px solid rgba(255,255,255,.06);
+}
+.stat-card .val { font-size: 28px; font-weight: 800; color: var(--accent); }
+.stat-card .lbl { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+.attr-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 0;
+}
+.attr-row .name { width: 50px; font-size: 13px; flex-shrink: 0; }
+.attr-row .bar-wrap {
+  flex: 1;
+  height: 10px;
+  background: rgba(255,255,255,.08);
+  border-radius: 6px;
+  overflow: hidden;
+}
+.attr-row .bar-wrap .fill {
+  height: 100%;
+  border-radius: 6px;
+  transition: .5s;
+}
+.attr-row .num { width: 42px; font-size: 11px; color: var(--muted); text-align: right; }
+.fill-phys { background: linear-gradient(90deg, #e05555, #e8b830); }
+.fill-habit { background: linear-gradient(90deg, #5b9bd5, #7ec8e3); }
+.fill-know { background: linear-gradient(90deg, #7b68ee, #a78bfa); }
+.fill-speak { background: linear-gradient(90deg, #4caf84, #81c784); }
+
+.weight-log { margin-top: 12px; }
+.weight-entry {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 0;
+  font-size: 13px;
+  border-bottom: 1px solid rgba(255,255,255,.04);
+}
+.weight-change-down { color: var(--green); }
+.weight-change-up { color: var(--red); }
+
+.toast {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--accent);
+  color: #1a1a2e;
+  padding: 10px 24px;
+  border-radius: 30px;
+  font-weight: 700;
+  font-size: 14px;
+  z-index: 100;
+  opacity: 0;
+  transition: .3s;
+  pointer-events: none;
+}
+.toast.show { opacity: 1; }
+
+.day-log {
+  background: var(--card);
+  border-radius: 12px;
+  padding: 12px;
+  margin-bottom: 10px;
+  border: 1px solid rgba(255,255,255,.06);
+  font-size: 13px;
+}
+.day-log .day-header {
+  font-weight: 700;
+  color: var(--accent);
+  margin-bottom: 6px;
+}
+.day-log .day-row { color: var(--muted); line-height: 1.6; }
+
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,.8);
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: .3s;
+}
+.modal-overlay.show { opacity: 1; pointer-events: auto; }
+.modal-box {
+  background: var(--card);
+  border-radius: 16px;
+  padding: 24px;
+  text-align: center;
+  max-width: 320px;
+  width: 90%;
+  border: 1px solid rgba(232,184,48,.3);
+}
+.modal-box .ach-icon { font-size: 56px; margin-bottom: 8px; }
+.modal-box .ach-name { font-size: 20px; font-weight: 800; color: var(--accent); }
+.modal-box .ach-rarity { font-size: 13px; color: var(--muted); margin-top: 4px; }
+.modal-box .ach-cond { font-size: 12px; color: var(--muted); margin-top: 8px; }
+
+.rarity-bronze { color: var(--bronze); }
+.rarity-silver { color: var(--silver); }
+.rarity-gold { color: var(--gold); }
+.rarity-platinum { color: #7ec8e3; }
+.rarity-legend { color: #e05555; }
+
+.pulse { animation: pulse 1s ease; }
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.08); }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-left">
+    <h1>🎮 人生RPG</h1>
+    <div class="title-badge" id="currentTitle">🌱 萌芽行者</div>
+  </div>
+  <div class="header-right">
+    <div class="xp">⚡ <span id="totalXP">0</span> XP</div>
+    <div class="streak">🔥 连续 <span id="streakDays">0</span> 天</div>
+    <div style="margin-top:2px">打卡 <span id="totalDays">0</span> 天</div>
+  </div>
+</header>
+
+<div class="tabs">
+  <div class="tab active" onclick="switchTab('checkin')">📋 打卡</div>
+  <div class="tab" onclick="switchTab('achieve')">🏆 成就</div>
+  <div class="tab" onclick="switchTab('stats')">📊 数据</div>
+  <div class="tab" onclick="switchTab('history')">📜 记录</div>
+</div>
+
+<main>
+  <!-- Check-in Form -->
+  <div class="form-section active" id="tab-checkin">
+    <div class="card">
+      <h3><span class="emoji">🏋️</span> 减肥</h3>
+      <div class="check-row" onclick="toggleCheck('diet_water')">
+        <div class="box" id="box-diet_water">✓</div>
+        <span class="label">🥤 喝够2L水</span>
+        <span class="xp-badge">+10</span>
+      </div>
+      <div class="check-row" onclick="toggleCheck('diet_nosnack')">
+        <div class="box" id="box-diet_nosnack">✓</div>
+        <span class="label">🚫 不吃零食</span>
+        <span class="xp-badge">+15</span>
+      </div>
+      <div class="check-row" onclick="toggleCheck('diet_halfrice')">
+        <div class="box" id="box-diet_halfrice">✓</div>
+        <span class="label">🍚 主食减半（午/晚）</span>
+        <span class="xp-badge">+20</span>
+      </div>
+      <div class="check-row" onclick="toggleCheck('diet_veggie')">
+        <div class="box" id="box-diet_veggie">✓</div>
+        <span class="label">🥬 午/晚餐有蔬菜</span>
+        <span class="xp-badge">+10</span>
+      </div>
+      <div class="check-row" onclick="toggleCheck('diet_protein')">
+        <div class="box" id="box-diet_protein">✓</div>
+        <span class="label">🍗 蛋白优先</span>
+        <span class="xp-badge">+10</span>
+      </div>
+      <div class="check-row" onclick="toggleCheck('diet_nolate')">
+        <div class="box" id="box-diet_nolate">✓</div>
+        <span class="label">🌙 20:00后不进食</span>
+        <span class="xp-badge">+15</span>
+      </div>
+      <div class="divider"></div>
+      <label style="font-size:13px;color:var(--muted)">⚖️ 今日体重（kg）</label>
+      <input type="number" id="weightInput" placeholder="83.10" step="0.01" inputmode="decimal">
+      <label style="font-size:13px;color:var(--muted);display:block;margin-top:8px">🍽️ 三餐简述</label>
+      <textarea id="dietNote" placeholder="早/午/晚各吃了什么？"></textarea>
+      <label style="font-size:13px;color:var(--muted);display:block;margin-top:8px">🚫 违规记录（选填）</label>
+      <textarea id="dietPenalty" placeholder="含糖饮料/炸鸡烧烤/暴食——诚实记录，扣分不可耻"></textarea>
+    </div>
+
+    <div class="card">
+      <h3><span class="emoji">⚡</span> 锻炼</h3>
+      <div class="check-row" onclick="toggleCheck('ex_done')">
+        <div class="box" id="box-ex_done">✓</div>
+        <span class="label">✅ 今日运动了</span>
+        <span class="xp-badge">+10</span>
+      </div>
+      <input type="text" id="exDetail" placeholder="类型 + 时长（如：热身5分钟、散步15分钟）">
+    </div>
+
+    <div class="card">
+      <h3><span class="emoji">🎓</span> 学习</h3>
+      <div class="check-row" onclick="toggleCheck('study_done')">
+        <div class="box" id="box-study_done">✓</div>
+        <span class="label">📖 今天学习了</span>
+        <span class="xp-badge">+15</span>
+      </div>
+      <textarea id="studyDetail" placeholder="学了什么？3句话总结一下"></textarea>
+    </div>
+
+    <div class="card">
+      <h3><span class="emoji">🗣️</span> 英语</h3>
+      <div class="check-row" onclick="toggleCheck('eng_duolingo')">
+        <div class="box" id="box-eng_duolingo">✓</div>
+        <span class="label">🟢 多邻国打卡完成</span>
+        <span class="xp-badge">+20</span>
+      </div>
+      <label style="font-size:13px;color:var(--muted)">🔥 多邻国连胜天数</label>
+      <input type="number" id="duoStreak" placeholder="1" inputmode="numeric">
+      <label style="font-size:13px;color:var(--muted);display:block;margin-top:8px">额外练习（选填）</label>
+      <input type="text" id="engExtra" placeholder="如：影子跟读、自言自语">
+    </div>
+
+    <div class="card">
+      <h3><span class="emoji">💭</span> 今日一句话</h3>
+      <input type="text" id="dailyNote" placeholder="随便说什么都行">
+    </div>
+
+    <button class="btn btn-submit" onclick="submitDay()">⚔️ 提交今日战报</button>
+    <button class="btn btn-backup" onclick="exportData()">💾 导出备份</button>
+    <button class="btn btn-backup" onclick="document.getElementById('importFile').click()" style="margin-top:4px">📥 导入备份</button>
+    <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(event)">
+    <div style="font-size:11px;color:var(--muted);text-align:center;margin-top:8px">
+      数据全存你手机里 · 换手机记得导出备份
+    </div>
+  </div>
+
+  <!-- Achievements Tab -->
+  <div class="form-section" id="tab-achieve">
+    <div style="margin-bottom:12px">
+      <span style="font-size:13px;color:var(--muted)">已解锁 </span>
+      <span style="font-weight:700;color:var(--accent)" id="achUnlocked">0</span>
+      <span style="font-size:13px;color:var(--muted)"> / 40 个成就</span>
+    </div>
+    <div class="ach-grid" id="achGrid"></div>
+  </div>
+
+  <!-- Stats Tab -->
+  <div class="form-section" id="tab-stats">
+    <div class="stat-grid">
+      <div class="stat-card"><div class="val" id="statTotalDays">0</div><div class="lbl">累计打卡天数</div></div>
+      <div class="stat-card"><div class="val" id="statStreak">0</div><div class="lbl">最长连续打卡</div></div>
+      <div class="stat-card"><div class="val" id="statWeight">83.10</div><div class="lbl">最新体重 (kg)</div></div>
+      <div class="stat-card"><div class="val" id="statWeightChange">—</div><div class="lbl">体重变化</div></div>
+    </div>
+
+    <div class="card" style="margin-top:12px">
+      <h3>📊 四维属性</h3>
+      <div class="attr-row"><span class="name">🏋️ 体魄</span><div class="bar-wrap"><div class="fill fill-phys" id="fill-phys" style="width:0%"></div></div><span class="num" id="num-phys">0/100</span></div>
+      <div class="attr-row"><span class="name">⚡ 习惯</span><div class="bar-wrap"><div class="fill fill-habit" id="fill-habit" style="width:0%"></div></div><span class="num" id="num-habit">0/100</span></div>
+      <div class="attr-row"><span class="name">🎓 学识</span><div class="bar-wrap"><div class="fill fill-know" id="fill-know" style="width:0%"></div></div><span class="num" id="num-know">0/100</span></div>
+      <div class="attr-row"><span class="name">🗣️ 表达</span><div class="bar-wrap"><div class="fill fill-speak" id="fill-speak" style="width:0%"></div></div><span class="num" id="num-speak">0/100</span></div>
+    </div>
+
+    <div class="card">
+      <h3>⚖️ 体重记录</h3>
+      <div class="weight-log" id="weightLog"></div>
+    </div>
+
+    <div class="card">
+      <h3>🏅 称号进度</h3>
+      <div id="titleProgress"></div>
+    </div>
+  </div>
+
+  <!-- History Tab -->
+  <div class="form-section" id="tab-history">
+    <div id="historyList"></div>
+  </div>
+</main>
+
+<div class="toast" id="toast"></div>
+<div class="modal-overlay" id="achModal" onclick="closeModal()">
+  <div class="modal-box" onclick="event.stopPropagation()">
+    <div class="ach-icon pulse" id="modalIcon"></div>
+    <div class="ach-name" id="modalName"></div>
+    <div class="ach-rarity" id="modalRarity"></div>
+    <div class="ach-cond" id="modalCond"></div>
+  </div>
+</div>
+
+<script>
+// ======== DATA ENGINE ========
+const ALL_ACHIEVEMENTS = [
+  // 减肥 (12)
+  { id:'diet_3day', icon:'🥉', name:'初尝节制', rarity:'铜', cat:'diet', cond:'连续3天完成所有减肥任务', check: d=>d.dietPerfectStreak>=3 },
+  { id:'diet_7day', icon:'🥈', name:'七日之约', rarity:'银', cat:'diet', cond:'连续7天完成所有减肥任务', check: d=>d.dietPerfectStreak>=7 },
+  { id:'diet_80', icon:'🛡️', name:'破八零勇士', rarity:'银', cat:'diet', cond:'体重首次 < 80kg', check: d=>d.minWeight<80 },
+  { id:'diet_08kg', icon:'⚡', name:'闪电瘦身', rarity:'银', cat:'diet', cond:'单周减重 ≥ 0.8kg', check: d=>d.bestWeekLoss>=0.8 },
+  { id:'diet_4week', icon:'📉', name:'稳定下滑', rarity:'金', cat:'diet', cond:'连续4周体重下降', check: d=>d.weightDownWeeks>=4 },
+  { id:'diet_bmi24', icon:'🎯', name:'标准身材', rarity:'金', cat:'diet', cond:'BMI < 24 (体重 < 72.7kg)', check: d=>d.minWeight<72.7 },
+  { id:'diet_abs', icon:'💪', name:'腹肌初现', rarity:'铂金', cat:'diet', cond:'能看见腹肌轮廓', check: ()=>false },
+  { id:'diet_peak', icon:'🏔️', name:'巅峰之躯', rarity:'铂金', cat:'diet', cond:'BMI 21-23，体脂 < 18%', check: ()=>false },
+  { id:'diet_nosugar14', icon:'🚫', name:'禁糖战士', rarity:'银', cat:'diet', cond:'连续14天不喝含糖饮料', check: d=>d.noSugarStreak>=14 },
+  { id:'diet_nosugar30', icon:'🔥', name:'代谢觉醒', rarity:'金', cat:'diet', cond:'连续30天不喝含糖饮料', check: d=>d.noSugarStreak>=30 },
+  { id:'diet_cook7', icon:'🥗', name:'厨房掌控者', rarity:'银', cat:'diet', cond:'连续7天自己做饭', check: ()=>false },
+  { id:'diet_75', icon:'🎮', name:'轻量级选手', rarity:'金', cat:'diet', cond:'体重降至75kg以下', check: d=>d.minWeight<75 },
+
+  // 锻炼 (10)
+  { id:'ex_first', icon:'👟', name:'第一步', rarity:'铜', cat:'ex', cond:'完成第1次运动打卡', check: d=>d.exTotalDays>=1 },
+  { id:'ex_3day', icon:'🔥', name:'连续出击', rarity:'铜', cat:'ex', cond:'连续运动打卡3天', check: d=>d.exStreak>=3 },
+  { id:'ex_7day', icon:'⚡', name:'习惯火花', rarity:'银', cat:'ex', cond:'连续运动打卡7天', check: d=>d.exStreak>=7 },
+  { id:'ex_14day', icon:'🛤️', name:'轨道之上', rarity:'金', cat:'ex', cond:'连续运动打卡14天', check: d=>d.exStreak>=14 },
+  { id:'ex_30day', icon:'🏗️', name:'钢铁之躯', rarity:'铂金', cat:'ex', cond:'连续运动打卡30天', check: d=>d.exStreak>=30 },
+  { id:'ex_bike100', icon:'🚴', name:'追风少年', rarity:'银', cat:'ex', cond:'累计骑行100公里', check: ()=>false },
+  { id:'ex_strength', icon:'🏋️', name:'铁馆新人', rarity:'铜', cat:'ex', cond:'完成第1次力量训练', check: d=>d.hasStrength },
+  { id:'ex_100', icon:'💯', name:'百次挥拳', rarity:'铂金', cat:'ex', cond:'累计100次运动打卡', check: d=>d.exTotalDays>=100 },
+  { id:'ex_morning7', icon:'🌅', name:'晨光行者', rarity:'金', cat:'ex', cond:'连续7天早上运动', check: ()=>false },
+  { id:'ex_5k', icon:'🏃', name:'五公里征服者', rarity:'金', cat:'ex', cond:'不间断跑完5公里', check: ()=>false },
+
+  // 学习 (10)
+  { id:'study_first', icon:'📖', name:'初入学术之门', rarity:'铜', cat:'study', cond:'完成第1次学习打卡', check: d=>d.studyTotalDays>=1 },
+  { id:'study_10', icon:'📚', name:'十页积累', rarity:'铜', cat:'study', cond:'累计10次学习打卡', check: d=>d.studyTotalDays>=10 },
+  { id:'study_30', icon:'🧠', name:'知识收割者', rarity:'银', cat:'study', cond:'累计30次学习打卡', check: d=>d.studyTotalDays>=30 },
+  { id:'study_50', icon:'🎓', name:'学术学徒', rarity:'金', cat:'study', cond:'累计50次学习打卡', check: d=>d.studyTotalDays>=50 },
+  { id:'study_paper1', icon:'📄', name:'论文破壁人', rarity:'银', cat:'study', cond:'精读完第1篇硕士论文', check: ()=>false },
+  { id:'study_paper3', icon:'🔬', name:'三篇之力', rarity:'金', cat:'study', cond:'精读完3篇硕士论文', check: ()=>false },
+  { id:'study_zotero', icon:'🗂️', name:'文献管理者', rarity:'铜', cat:'study', cond:'用Zotero建立第一个文献库', check: ()=>false },
+  { id:'study_markdown', icon:'✍️', name:'笔记大师', rarity:'铜', cat:'study', cond:'写出第1篇结构化笔记', check: ()=>false },
+  { id:'study_ppt', icon:'🎤', name:'学术演讲者', rarity:'金', cat:'study', cond:'完成第1次学术PPT汇报', check: ()=>false },
+  { id:'study_ready', icon:'🏛️', name:'入学就绪', rarity:'铂金', cat:'study', cond:'开学前完成所有模块', check: ()=>false },
+
+  // 英语 (8)
+  { id:'eng_first', icon:'🟢', name:'多邻新人', rarity:'铜', cat:'eng', cond:'完成第1次多邻国打卡', check: d=>d.engTotalDays>=1 },
+  { id:'eng_7day', icon:'🎤', name:'七日连胜', rarity:'银', cat:'eng', cond:'多邻国连续打卡7天', check: d=>d.engStreak>=7 },
+  { id:'eng_30day', icon:'🔥', name:'月度战士', rarity:'金', cat:'eng', cond:'多邻国连续打卡30天', check: d=>d.engStreak>=30 },
+  { id:'eng_diamond', icon:'💎', name:'钻石段位', rarity:'金', cat:'eng', cond:'多邻国段位达到钻石', check: ()=>false },
+  { id:'eng_speak7', icon:'🎤', name:'七日开口', rarity:'银', cat:'eng', cond:'连续7天口语练习', check: ()=>false },
+  { id:'eng_3min', icon:'💬', name:'自我叙述者', rarity:'金', cat:'eng', cond:'能用英语连续说3分钟', check: ()=>false },
+  { id:'eng_native', icon:'🌍', name:'口语觉醒', rarity:'铂金', cat:'eng', cond:'第一次不需要脑中翻译', check: ()=>false },
+  { id:'eng_100', icon:'🏅', name:'百日连胜', rarity:'铂金', cat:'eng', cond:'多邻国累计100天', check: d=>d.engTotalDays>=100 },
+];
+
+const TITLES = [
+  { name:'🌱 萌芽行者', days:7 },
+  { name:'🌿 成长旅人', days:30 },
+  { name:'🌳 坚定守望者', days:60 },
+  { name:'🏰 自律之王', days:100 },
+  { name:'⭐ 传奇建造者', days:365 },
+];
+
+const DEFAULT_DATA = {
+  days: [],
+  unlockedAch: [],
+  totalXP: 0,
+  physXP: 0, habitXP: 0, knowXP: 0, speakXP: 0,
+  noSugarStreak: 0,
+  minWeight: Infinity,
+  bestWeekLoss: 0,
+  weightDownWeeks: 0,
+  hasStrength: false,
+};
+
+let DATA = loadData();
+
+function loadData() {
+  try {
+    const raw = localStorage.getItem('liferpg_data');
+    if (!raw) return JSON.parse(JSON.stringify(DEFAULT_DATA));
+    const d = JSON.parse(raw);
+    // Merge with defaults for new fields
+    return { ...JSON.parse(JSON.stringify(DEFAULT_DATA)), ...d };
+  } catch(e) { return JSON.parse(JSON.stringify(DEFAULT_DATA)); }
+}
+
+function saveData() { localStorage.setItem('liferpg_data', JSON.stringify(DATA)); }
+
+function computeDerived() {
+  const days = DATA.days;
+  // Total days
+  const totalDays = days.length;
+  const totalXP = DATA.totalXP;
+
+  // Current streak
+  let streak = 0;
+  const today = new Date().toISOString().slice(0,10);
+  for (let i = days.length-1; i >= 0; i--) {
+    const expected = new Date();
+    expected.setDate(expected.getDate() - (days.length-1 - i));
+    const expStr = expected.toISOString().slice(0,10);
+    if (days[i].date === expStr || (i===days.length-1 && days[i].date===today)) {
+      streak++;
+    } else { break; }
+  }
+  // Simpler: check from today backwards
+  let streak2 = 0;
+  let checkDate = new Date();
+  for (let i = days.length-1; i >= 0; i--) {
+    const d = new Date(days[i].date + 'T00:00:00');
+    const cd = new Date(checkDate);
+    cd.setHours(0,0,0,0);
+    if (d.getTime() === cd.getTime()) {
+      streak2++;
+      checkDate.setDate(checkDate.getDate()-1);
+    } else if (d < cd) { break; }
+  }
+
+  // Exercise streak
+  let exStreak = 0;
+  let exTotal = 0;
+  for (const day of days) {
+    if (day.exDone) { exTotal++; exStreak++; }
+    else { exStreak = 0; }
+  }
+
+  // Diet perfect streak
+  let dietPerfectStreak = 0;
+  for (let i = days.length-1; i >= 0; i--) {
+    const day = days[i];
+    const allDone = day.dietWater && day.dietNoSnack && day.dietHalfRice && day.dietVeggie && day.dietProtein && day.dietNoLate;
+    if (allDone) dietPerfectStreak++;
+    else break;
+  }
+
+  // English streak
+  let engStreak = 0;
+  let engTotal = 0;
+  for (const day of days) {
+    if (day.engDuolingo) { engTotal++; engStreak++; }
+    else { engStreak = 0; }
+  }
+
+  // Study total
+  let studyTotal = 0;
+  for (const day of days) { if (day.studyDone) studyTotal++; }
+
+  // No sugar streak
+  let noSugarStreak = 0;
+  for (let i = days.length-1; i >= 0; i--) {
+    if (!days[i].dietPenalty || !days[i].dietPenalty.includes('含糖')) noSugarStreak++;
+    else break;
+  }
+
+  // Min weight
+  let minW = Infinity;
+  for (const day of days) { if (day.weight && day.weight < minW) minW = day.weight; }
+
+  // Best week loss
+  let bestWL = 0;
+  for (let i = 0; i < days.length; i++) {
+    if (i >= 6) {
+      const w0 = days[i-6].weight;
+      const w1 = days[i].weight;
+      if (w0 && w1 && (w0-w1) > bestWL) bestWL = w0-w1;
+    }
+  }
+
+  // Weight down weeks (consecutive)
+  let wdw = 0;
+  if (days.length >= 7) {
+    const weeks = [];
+    for (let i = 6; i < days.length; i+=7) {
+      weeks.push({ start: days[i-6], end: days[i] });
+    }
+    for (let i = weeks.length-1; i >= 0; i--) {
+      if (weeks[i].end.weight && weeks[i].start.weight && weeks[i].end.weight < weeks[i].start.weight) wdw++;
+      else break;
+    }
+  }
+
+  return {
+    totalDays, streak: streak2, totalXP,
+    exStreak, exTotalDays: exTotal,
+    dietPerfectStreak,
+    engStreak, engTotalDays: engTotal,
+    studyTotalDays: studyTotal,
+    noSugarStreak,
+    minWeight: minW===Infinity ? 83.5 : minW,
+    bestWeekLoss: bestWL,
+    weightDownWeeks: wdw,
+    hasStrength: days.some(d=>d.exDetail && (d.exDetail.includes('力量')||d.exDetail.includes('深蹲')||d.exDetail.includes('俯卧撑')||d.exDetail.includes('哑铃'))),
+  };
+}
+
+function checkNewAchievements() {
+  const derived = computeDerived();
+  const newUnlocks = [];
+  for (const ach of ALL_ACHIEVEMENTS) {
+    if (DATA.unlockedAch.includes(ach.id)) continue;
+    try {
+      if (ach.check(derived)) {
+        DATA.unlockedAch.push(ach.id);
+        newUnlocks.push(ach);
+      }
+    } catch(e) {}
+  }
+  if (newUnlocks.length > 0) saveData();
+  return newUnlocks;
+}
+
+function submitDay() {
+  const today = new Date().toISOString().slice(0,10);
+
+  // Check if already submitted today
+  if (DATA.days.length > 0 && DATA.days[DATA.days.length-1].date === today) {
+    showToast('⚠️ 今天已经汇报过了！');
+    return;
+  }
+
+  const day = {
+    date: today,
+    // Diet
+    dietWater: checkStates['diet_water']||false,
+    dietNoSnack: checkStates['diet_nosnack']||false,
+    dietHalfRice: checkStates['diet_halfrice']||false,
+    dietVeggie: checkStates['diet_veggie']||false,
+    dietProtein: checkStates['diet_protein']||false,
+    dietNoLate: checkStates['diet_nolate']||false,
+    weight: parseFloat(document.getElementById('weightInput').value) || null,
+    dietNote: document.getElementById('dietNote').value.trim(),
+    dietPenalty: document.getElementById('dietPenalty').value.trim(),
+    // Exercise
+    exDone: checkStates['ex_done']||false,
+    exDetail: document.getElementById('exDetail').value.trim(),
+    // Study
+    studyDone: checkStates['study_done']||false,
+    studyDetail: document.getElementById('studyDetail').value.trim(),
+    // English
+    engDuolingo: checkStates['eng_duolingo']||false,
+    duoStreak: parseInt(document.getElementById('duoStreak').value) || null,
+    engExtra: document.getElementById('engExtra').value.trim(),
+    // Note
+    dailyNote: document.getElementById('dailyNote').value.trim(),
+  };
+
+  // Calculate XP
+  let dayXP = 0;
+  if (day.dietWater) dayXP += 10;
+  if (day.dietNoSnack) dayXP += 15;
+  if (day.dietHalfRice) dayXP += 20;
+  if (day.dietVeggie) dayXP += 10;
+  if (day.dietProtein) dayXP += 10;
+  if (day.dietNoLate) dayXP += 15;
+  if (day.exDone) dayXP += 10;
+  if (day.studyDone) dayXP += 15;
+  if (day.engDuolingo) dayXP += 20;
+  // Penalties
+  if (day.dietPenalty) {
+    if (day.dietPenalty.includes('含糖')) dayXP -= 30;
+    if (day.dietPenalty.includes('炸鸡')||day.dietPenalty.includes('烧烤')||day.dietPenalty.includes('火锅')) dayXP -= 20;
+    if (day.dietPenalty.includes('暴食')) dayXP -= 40;
+  }
+  day.xp = dayXP;
+
+  DATA.days.push(day);
+  DATA.totalXP = (DATA.totalXP||0) + dayXP;
+
+  // Attribute XP
+  DATA.physXP = (DATA.physXP||0) + (day.dietWater?10:0)+(day.dietNoSnack?15:0)+(day.dietHalfRice?20:0)+(day.dietVeggie?10:0)+(day.dietProtein?10:0)+(day.dietNoLate?15:0)+(day.exDone?10:0);
+  DATA.habitXP = (DATA.habitXP||0) + 1; // streak day
+  DATA.knowXP = (DATA.knowXP||0) + (day.studyDone?15:0);
+  DATA.speakXP = (DATA.speakXP||0) + (day.engDuolingo?20:0);
+
+  saveData();
+  const newAch = checkNewAchievements();
+
+  // Reset form
+  resetForm();
+  showToast(`⚔️ 战报提交！+${dayXP} XP`);
+
+  // Show achievement popups
+  if (newAch.length > 0) {
+    setTimeout(() => showAchModal(newAch[0], 0, newAch), 500);
+  }
+
+  renderAll();
+}
+
+function resetForm() {
+  for (const k of Object.keys(checkStates)) checkStates[k] = false;
+  document.querySelectorAll('.box').forEach(b => b.classList.remove('checked'));
+  document.getElementById('weightInput').value = '';
+  document.getElementById('dietNote').value = '';
+  document.getElementById('dietPenalty').value = '';
+  document.getElementById('exDetail').value = '';
+  document.getElementById('studyDetail').value = '';
+  document.getElementById('duoStreak').value = '';
+  document.getElementById('engExtra').value = '';
+  document.getElementById('dailyNote').value = '';
+}
+
+// ======== CHECKBOX LOGIC ========
+const checkStates = {};
+function toggleCheck(id) {
+  checkStates[id] = !checkStates[id];
+  const box = document.getElementById('box-'+id);
+  if (box) {
+    if (checkStates[id]) box.classList.add('checked');
+    else box.classList.remove('checked');
+  }
+}
+
+// ======== TABS ========
+function switchTab(name) {
+  document.querySelectorAll('.form-section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('tab-'+name).classList.add('active');
+  document.querySelectorAll('.tab').forEach(t=>{ if(t.textContent.includes({checkin:'打卡',achieve:'成就',stats:'数据',history:'记录'}[name])) t.classList.add('active'); });
+
+  if (name === 'achieve') renderAchievements();
+  if (name === 'stats') renderStats();
+  if (name === 'history') renderHistory();
+}
+
+// ======== RENDER ========
+function renderAll() {
+  const d = computeDerived();
+  document.getElementById('totalXP').textContent = d.totalXP;
+  document.getElementById('streakDays').textContent = d.streak;
+  document.getElementById('totalDays').textContent = d.totalDays;
+
+  // Title
+  let title = '🌱 萌芽行者';
+  for (const t of TITLES) {
+    if (d.totalDays >= t.days) title = t.name;
+  }
+  document.getElementById('currentTitle').textContent = title;
+}
+
+function renderAchievements() {
+  const d = computeDerived();
+  const grid = document.getElementById('achGrid');
+  document.getElementById('achUnlocked').textContent = DATA.unlockedAch.length;
+
+  let html = '';
+  for (const ach of ALL_ACHIEVEMENTS) {
+    const unlocked = DATA.unlockedAch.includes(ach.id);
+    let progress = 0;
+    if (!unlocked) {
+      // Estimate progress
+      if (ach.id.includes('3day')||ach.id.includes('_3day')) progress = Math.min(100, (d.dietPerfectStreak||d.exStreak||0)/3*100);
+      else if (ach.id.includes('7day')||ach.id.includes('_7day')) progress = Math.min(100, (d.dietPerfectStreak||d.exStreak||d.engStreak||0)/7*100);
+      else if (ach.id.includes('14day')||ach.id.includes('_14day')) progress = Math.min(100, (d.exStreak||d.noSugarStreak||0)/14*100);
+      else if (ach.id.includes('30day')||ach.id.includes('_30day')) progress = Math.min(100, (d.exStreak||d.engStreak||d.noSugarStreak||0)/30*100);
+    } else { progress = 100; }
+
+    html += `<div class="ach-card ${unlocked?'unlocked':'locked'}">
+      <div class="icon">${ach.icon}</div>
+      <div class="name">${ach.name}</div>
+      <div class="rarity rarity-${ach.rarity==='铜'?'bronze':ach.rarity==='银'?'silver':ach.rarity==='金'?'gold':ach.rarity==='铂金'?'platinum':'legend'}">${'⭐'.repeat(ach.rarity==='铜'?1:ach.rarity==='银'?2:ach.rarity==='金'?3:ach.rarity==='铂金'?4:5)} ${ach.rarity}</div>
+      <div class="cond">${ach.cond}</div>
+      <div class="progress"><div class="bar" style="width:${progress}%"></div></div>
+    </div>`;
+  }
+  grid.innerHTML = html;
+}
+
+function renderStats() {
+  const d = computeDerived();
+  document.getElementById('statTotalDays').textContent = d.totalDays;
+  document.getElementById('statStreak').textContent = d.streak;
+
+  const lastWeight = DATA.days.filter(d=>d.weight).pop();
+  document.getElementById('statWeight').textContent = lastWeight ? lastWeight.weight.toFixed(2) : '—';
+
+  // Weight change from first
+  const firstW = DATA.days.find(d=>d.weight);
+  if (firstW && lastWeight) {
+    const diff = (lastWeight.weight - firstW.weight).toFixed(2);
+    document.getElementById('statWeightChange').textContent = (diff>0?'+':'')+diff+' kg';
+  }
+
+  // Attribute bars
+  const phys = Math.min(100, Math.floor((DATA.physXP||0)/10));
+  const habit = Math.min(100, Math.floor((DATA.habitXP||0)));
+  const know = Math.min(100, Math.floor((DATA.knowXP||0)/10));
+  const speak = Math.min(100, Math.floor((DATA.speakXP||0)/10));
+
+  document.getElementById('fill-phys').style.width = phys+'%';
+  document.getElementById('num-phys').textContent = phys+'/100';
+  document.getElementById('fill-habit').style.width = habit+'%';
+  document.getElementById('num-habit').textContent = habit+'/100';
+  document.getElementById('fill-know').style.width = know+'%';
+  document.getElementById('num-know').textContent = know+'/100';
+  document.getElementById('fill-speak').style.width = speak+'%';
+  document.getElementById('num-speak').textContent = speak+'/100';
+
+  // Weight log
+  const weights = DATA.days.filter(d=>d.weight).slice(-14);
+  let whtml = '';
+  for (const w of weights.reverse()) {
+    const prev = DATA.days[DATA.days.indexOf(w)-1];
+    const chg = prev && prev.weight ? (w.weight - prev.weight).toFixed(2) : null;
+    whtml += `<div class="weight-entry"><span>📅 ${w.date.slice(5)}</span><span>${w.weight.toFixed(2)} kg</span>${chg ? `<span class="${chg>0?'weight-change-up':'weight-change-down'}">${chg>0?'+':''}${chg}</span>` : ''}</div>`;
+  }
+  document.getElementById('weightLog').innerHTML = whtml || '<div style="color:var(--muted);font-size:13px">暂无体重记录</div>';
+
+  // Title progress
+  let thtml = '';
+  for (const t of TITLES) {
+    const pct = Math.min(100, Math.floor(d.totalDays/t.days*100));
+    thtml += `<div style="margin-bottom:8px"><div style="display:flex;justify-content:space-between;font-size:13px"><span>${t.name}</span><span style="color:var(--muted)">${d.totalDays}/${t.days}</span></div><div class="progress" style="height:6px;margin-top:4px"><div class="bar" style="width:${pct}%"></div></div></div>`;
+  }
+  document.getElementById('titleProgress').innerHTML = thtml;
+}
+
+function renderHistory() {
+  const days = [...DATA.days].reverse().slice(0, 30);
+  let html = '';
+  for (const day of days) {
+    const lines = [];
+    if (day.dietWater) lines.push('🥤水');
+    if (day.dietNoSnack) lines.push('🚫零');
+    if (day.dietHalfRice) lines.push('🍚半');
+    if (day.dietVeggie) lines.push('🥬蔬');
+    if (day.dietProtein) lines.push('🍗蛋');
+    if (day.dietNoLate) lines.push('🌙禁');
+    if (day.exDone) lines.push('⚡动');
+    if (day.studyDone) lines.push('📖学');
+    if (day.engDuolingo) lines.push('🟢英');
+    const badges = lines.join(' ');
+    html += `<div class="day-log">
+      <div class="day-header">📅 ${day.date} · +${day.xp||0} XP</div>
+      <div class="day-row">${badges || '💤 未打卡'}</div>
+      ${day.dailyNote ? `<div class="day-row">💭 ${day.dailyNote}</div>` : ''}
+      ${day.weight ? `<div class="day-row">⚖️ ${day.weight} kg</div>` : ''}
+    </div>`;
+  }
+  document.getElementById('historyList').innerHTML = html || '<div style="color:var(--muted);text-align:center;padding:40px">还没有记录，快去打卡吧 🎮</div>';
+}
+
+// ======== ACHIEVEMENT POPUP ========
+function showAchModal(ach, idx, arr) {
+  document.getElementById('modalIcon').textContent = ach.icon;
+  document.getElementById('modalName').textContent = ach.name;
+  document.getElementById('modalRarity').innerHTML = `<span class="rarity-${ach.rarity==='铜'?'bronze':ach.rarity==='银'?'silver':ach.rarity==='金'?'gold':ach.rarity==='铂金'?'platinum':'legend'}">${'⭐'.repeat(ach.rarity==='铜'?1:ach.rarity==='银'?2:ach.rarity==='金'?3:ach.rarity==='铂金'?4:5)} ${ach.rarity}</span>`;
+  document.getElementById('modalCond').textContent = ach.cond;
+  const modal = document.getElementById('achModal');
+  modal.classList.add('show');
+  // Auto close
+  setTimeout(() => {
+    modal.classList.remove('show');
+    if (idx+1 < arr.length) setTimeout(() => showAchModal(arr[idx+1], idx+1, arr), 400);
+  }, 2500);
+}
+
+function closeModal() {
+  document.getElementById('achModal').classList.remove('show');
+}
+
+// ======== TOAST ========
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+// ======== BACKUP / RESTORE ========
+function exportData() {
+  const blob = new Blob([JSON.stringify(DATA, null, 2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'liferpg-backup-'+new Date().toISOString().slice(0,10)+'.json';
+  a.click();
+  showToast('💾 备份已下载');
+}
+
+function importData(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(ev) {
+    try {
+      const imported = JSON.parse(ev.target.result);
+      if (!imported.days || !Array.isArray(imported.days)) throw new Error('格式不对');
+      DATA = { ...JSON.parse(JSON.stringify(DEFAULT_DATA)), ...imported };
+      saveData();
+      renderAll();
+      showToast('📥 数据已恢复！');
+    } catch(err) { showToast('❌ 文件格式错误'); }
+  };
+  reader.readAsText(file);
+  e.target.value = '';
+}
+
+// ======== INIT ========
+renderAll();
+// Pre-fill checkStates from today's data if not yet submitted
+const today = new Date().toISOString().slice(0,10);
+const todayData = DATA.days.length>0 && DATA.days[DATA.days.length-1].date===today ? DATA.days[DATA.days.length-1] : null;
+if (todayData) {
+  for (const k of Object.keys(checkStates)) delete checkStates[k];
+  checkStates['diet_water'] = todayData.dietWater;
+  checkStates['diet_nosnack'] = todayData.dietNoSnack;
+  checkStates['diet_halfrice'] = todayData.dietHalfRice;
+  checkStates['diet_veggie'] = todayData.dietVeggie;
+  checkStates['diet_protein'] = todayData.dietProtein;
+  checkStates['diet_nolate'] = todayData.dietNoLate;
+  checkStates['ex_done'] = todayData.exDone;
+  checkStates['study_done'] = todayData.studyDone;
+  checkStates['eng_duolingo'] = todayData.engDuolingo;
+  document.getElementById('weightInput').value = todayData.weight||'';
+  document.getElementById('dietNote').value = todayData.dietNote||'';
+  document.getElementById('dietPenalty').value = todayData.dietPenalty||'';
+  document.getElementById('exDetail').value = todayData.exDetail||'';
+  document.getElementById('studyDetail').value = todayData.studyDetail||'';
+  document.getElementById('duoStreak').value = todayData.duoStreak||'';
+  document.getElementById('engExtra').value = todayData.engExtra||'';
+  document.getElementById('dailyNote').value = todayData.dailyNote||'';
+  // Update box visuals
+  for (const [k,v] of Object.entries(checkStates)) {
+    const box = document.getElementById('box-'+k);
+    if (box) { if (v) box.classList.add('checked'); else box.classList.remove('checked'); }
+  }
+}
+
+console.log('🎮 人生RPG 已就绪');
+console.log('📊 累计打卡', DATA.days.length, '天');
+console.log('🏆 解锁成就', DATA.unlockedAch.length, '个');
+console.log('💡 在手机浏览器打开 → 添加到主屏幕 → 像App一样使用');
+</script>
+</body>
+</html>

@@ -2,528 +2,325 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="人生RPG">
+<meta name="theme-color" content="#FFFFFF">
 <link rel="manifest" href="manifest.json">
-<title>🎮 人生RPG</title>
+<title>人生RPG</title>
 <style>
 :root {
-  --bg: #0f0f1a;
-  --card: #1a1a2e;
-  --accent: #e8b830;
-  --gold: #e8b830;
-  --silver: #a0a8b8;
-  --bronze: #c47a38;
-  --text: #e0d8c8;
-  --muted: #7a7a8a;
-  --green: #4caf84;
-  --red: #e05555;
-  --blue: #5b9bd5;
-  --xp: #7ec8e3;
+  --bg:#FFFFFF; --card:#F5F5F7; --text:#1A1A1A; --muted:#86868B;
+  --accent:#000; --green:#34C759; --red:#FF3B30; --orange:#FF9500;
+  --blue:#007AFF; --border:#E5E5EA; --gold:#D4A017; --silver:#8E8E93;
+  --bronze:#CD7F32; --plat:#4A90D9;
 }
-* { margin:0; padding:0; box-sizing:border-box; }
-body {
-  font-family: -apple-system, "SF Pro", "PingFang SC", "Microsoft YaHei", sans-serif;
-  background: var(--bg);
-  color: var(--text);
-  min-height: 100vh;
-  -webkit-tap-highlight-color: transparent;
-  user-select: none;
-  -webkit-user-select: none;
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  font-family:-apple-system,"SF Pro","PingFang SC","Microsoft YaHei",sans-serif;
+  background:var(--bg);color:var(--text);min-height:100vh;
+  padding-bottom:80px;-webkit-tap-highlight-color:transparent;
+  user-select:none;-webkit-user-select:none;
 }
-header {
-  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-  padding: 16px 20px;
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  border-bottom: 1px solid rgba(232,184,48,.2);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+/* Bottom Nav */
+nav{
+  position:fixed;bottom:0;left:0;right:0;z-index:20;
+  background:rgba(255,255,255,.92);backdrop-filter:blur(20px);
+  -webkit-backdrop-filter:blur(20px);
+  border-top:1px solid var(--border);
+  display:flex;height:76px;padding-bottom:20px;
 }
-.header-left h1 { font-size: 20px; font-weight: 700; }
-.header-left .title-badge {
-  display: inline-block;
-  margin-top: 4px;
-  font-size: 13px;
-  color: var(--accent);
-  background: rgba(232,184,48,.12);
-  padding: 2px 10px;
-  border-radius: 20px;
+nav .nv{
+  flex:1;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;gap:3px;cursor:pointer;
+  font-size:10px;color:var(--muted);font-weight:500;transition:.2s;
 }
-.header-right {
-  text-align: right;
-  font-size: 12px;
-  color: var(--muted);
+nav .nv.active{color:var(--accent);font-weight:700}
+nav .nv .ni{font-size:22px}
+/* Pages */
+.page{display:none;padding:16px}
+.page.active{display:block}
+/* Header */
+.topbar{
+  padding:12px 20px 8px;
+  display:flex;align-items:center;justify-content:space-between;
 }
-.header-right .xp { color: var(--xp); font-weight: 700; font-size: 16px; }
-.header-right .streak { color: var(--accent); }
-
-.tabs {
-  display: flex;
-  gap: 4px;
-  padding: 12px 16px;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
+.topbar h2{font-size:28px;font-weight:800;letter-spacing:-0.5px}
+.topbar .xp-badge{
+  background:var(--accent);color:#FFF;padding:4px 12px;
+  border-radius:20px;font-size:13px;font-weight:700;
 }
-.tabs::-webkit-scrollbar { display: none; }
-.tab {
-  flex-shrink: 0;
-  padding: 8px 16px;
-  border-radius: 20px;
-  font-size: 13px;
-  font-weight: 600;
-  border: 1px solid rgba(255,255,255,.1);
-  background: var(--card);
-  color: var(--muted);
-  cursor: pointer;
-  transition: .2s;
+/* Cards */
+.card{
+  background:var(--card);border-radius:14px;padding:16px;
+  margin-bottom:12px;
 }
-.tab.active { background: var(--accent); color: #1a1a2e; border-color: var(--accent); }
-
-main { padding: 0 16px 100px; }
-
-/* Check-in form */
-.form-section { display: none; }
-.form-section.active { display: block; }
-
-.card {
-  background: var(--card);
-  border-radius: 14px;
-  padding: 16px;
-  margin-bottom: 14px;
-  border: 1px solid rgba(255,255,255,.06);
+.card h3{font-size:15px;margin-bottom:10px;font-weight:600}
+/* Check rows */
+.crow{
+  display:flex;align-items:center;gap:10px;
+  padding:7px 0;cursor:pointer;
 }
-.card h3 { font-size: 15px; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
-.card h3 .emoji { font-size: 20px; }
-
-.check-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 8px 0;
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
+.crow:active{opacity:.6}
+.crow .cb{
+  width:22px;height:22px;border-radius:6px;
+  border:2px solid #C7C7CC;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  transition:.15s;font-size:12px;color:transparent;
 }
-.check-row:active { opacity: .7; }
-.check-row .box {
-  width: 24px; height: 24px;
-  border-radius: 6px;
-  border: 2px solid rgba(255,255,255,.25);
-  flex-shrink: 0;
-  display: flex; align-items: center; justify-content: center;
-  transition: .15s;
-  font-size: 14px;
+.crow .cb.on{background:var(--green);border-color:var(--green);color:#FFF}
+.crow .lbl{flex:1;font-size:14px}
+.crow .xp{font-size:11px;color:var(--orange);font-weight:600}
+.divider{height:1px;background:var(--border);margin:8px 0}
+input[type="text"],input[type="number"],textarea{
+  width:100%;padding:10px 14px;border-radius:10px;
+  border:1px solid var(--border);background:#FFF;
+  color:var(--text);font-size:14px;font-family:inherit;margin-top:6px;
+  -webkit-appearance:none;outline:none;
 }
-.check-row .box.checked {
-  background: var(--green);
-  border-color: var(--green);
+input:focus,textarea:focus{border-color:var(--accent)}
+textarea{min-height:44px;resize:vertical}
+.btn{
+  display:block;width:100%;padding:14px;border:none;border-radius:12px;
+  font-size:16px;font-weight:700;cursor:pointer;text-align:center;transition:.2s;
 }
-.check-row .label { flex:1; font-size: 14px; }
-.check-row .xp-badge {
-  font-size: 11px;
-  color: var(--xp);
-  background: rgba(126,200,227,.12);
-  padding: 2px 8px;
-  border-radius: 10px;
+.btn-main{background:var(--accent);color:#FFF;margin-top:8px}
+.btn-main:active{opacity:.8;transform:scale(.98)}
+.btn-ghost{
+  background:transparent;color:var(--muted);border:1px solid var(--border);
+  margin-top:6px;font-size:12px;padding:10px;
 }
-
-.divider {
-  height: 1px;
-  background: rgba(255,255,255,.06);
-  margin: 8px 0;
+/* Achievements */
+.subtabs{display:flex;gap:0;margin-bottom:12px;background:var(--card);border-radius:10px;padding:3px}
+.subtabs .st{
+  flex:1;text-align:center;padding:8px;border-radius:8px;
+  font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;transition:.2s;
 }
-
-input[type="text"], input[type="number"], textarea {
-  width: 100%;
-  padding: 10px 14px;
-  border-radius: 10px;
-  border: 1px solid rgba(255,255,255,.12);
-  background: rgba(255,255,255,.04);
-  color: var(--text);
-  font-size: 14px;
-  font-family: inherit;
-  margin-top: 6px;
-  -webkit-appearance: none;
+.subtabs .st.ac{background:#FFF;color:var(--accent)}
+.ach-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.ach-card{
+  background:var(--card);border-radius:12px;padding:12px;
+  text-align:center;border:1px solid var(--border);
 }
-textarea { min-height: 60px; resize: vertical; }
-input:focus, textarea:focus { outline: none; border-color: var(--accent); }
-
-.btn {
-  display: block;
-  width: 100%;
-  padding: 14px;
-  border: none;
-  border-radius: 12px;
-  font-size: 16px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: .2s;
-  text-align: center;
+.ach-card.locked{opacity:.45;filter:grayscale(.7)}
+.ach-card .icon{font-size:30px;margin-bottom:2px}
+.ach-card .name{font-size:12px;font-weight:600}
+.ach-card .rare{font-size:10px;color:var(--muted);margin-top:2px}
+.ach-card .cond{font-size:10px;color:var(--muted);margin-top:2px;line-height:1.3}
+.ach-card .prog{height:3px;background:var(--border);border-radius:3px;margin-top:6px;overflow:hidden}
+.ach-card .prog .bar{height:100%;background:var(--accent);border-radius:3px;transition:.3s}
+.rarity-bronze{color:var(--bronze)}.rarity-silver{color:var(--silver)}
+.rarity-gold{color:var(--gold)}.rarity-platinum{color:var(--plat)}
+.rarity-legend{color:var(--red)}
+/* Calendar */
+.cal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.cal-header .month{font-size:18px;font-weight:700}
+.cal-header button{background:var(--card);border:1px solid var(--border);padding:6px 14px;border-radius:8px;font-size:14px;cursor:pointer}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;text-align:center}
+.cal-grid .dow{font-size:11px;color:var(--muted);padding:4px 0;font-weight:600}
+.cal-grid .day{
+  aspect-ratio:1;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;border-radius:10px;font-size:13px;cursor:pointer;
+  position:relative;background:var(--card);font-weight:500;
 }
-.btn-submit {
-  background: var(--accent);
-  color: #1a1a2e;
-  margin-top: 8px;
+.cal-grid .day.other{opacity:.3}
+.cal-grid .day.today{border:2px solid var(--accent);font-weight:800}
+.cal-grid .day .dot{
+  width:5px;height:5px;border-radius:50%;background:var(--green);
+  position:absolute;bottom:5px;
 }
-.btn-submit:active { transform: scale(.97); opacity: .85; }
-.btn-backup {
-  background: transparent;
-  color: var(--muted);
-  border: 1px solid rgba(255,255,255,.15);
-  margin-top: 8px;
-  font-size: 13px;
-  padding: 10px;
+.cal-grid .day .dot.part{background:var(--orange)}
+.cal-detail{margin-top:12px;display:none}
+.cal-detail.show{display:block}
+/* Profile */
+.prof-avatar{
+  width:72px;height:72px;border-radius:50%;background:var(--accent);
+  color:#FFF;display:flex;align-items:center;justify-content:center;
+  font-size:36px;font-weight:800;margin:0 auto 12px;
 }
-
-/* Achievements tab */
-.ach-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
+.prof-name{text-align:center;font-size:20px;font-weight:700}
+.prof-title{text-align:center;font-size:13px;color:var(--muted);margin-top:2px}
+.stat-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
+.stat-box{
+  background:var(--card);border-radius:14px;padding:14px;text-align:center;
 }
-.ach-card {
-  background: var(--card);
-  border-radius: 12px;
-  padding: 12px;
-  text-align: center;
-  border: 1px solid rgba(255,255,255,.06);
-  transition: .3s;
+.stat-box .val{font-size:26px;font-weight:800}
+.stat-box .lbl{font-size:11px;color:var(--muted);margin-top:2px}
+.attr-box{margin-top:12px}
+.attr-box .ar{
+  display:flex;align-items:center;gap:8px;padding:4px 0;
 }
-.ach-card.locked { opacity: .35; filter: grayscale(1); }
-.ach-card.unlocked { border-color: var(--accent); animation: popIn .4s ease; }
-@keyframes popIn {
-  0% { transform: scale(.9); }
-  50% { transform: scale(1.05); }
-  100% { transform: scale(1); }
+.attr-box .ar .an{width:50px;font-size:12px;font-weight:600}
+.attr-box .ar .aw{flex:1;height:8px;background:var(--border);border-radius:4px;overflow:hidden}
+.attr-box .ar .aw .af{height:100%;border-radius:4px;transition:.5s}
+.attr-box .ar .av{width:36px;font-size:11px;color:var(--muted);text-align:right}
+/* Toast */
+.toast{
+  position:fixed;top:20px;left:50%;transform:translateX(-50%);
+  background:var(--accent);color:#FFF;padding:10px 24px;
+  border-radius:30px;font-weight:700;font-size:14px;
+  z-index:100;opacity:0;transition:.3s;pointer-events:none;
 }
-.ach-card .icon { font-size: 32px; margin-bottom: 4px; }
-.ach-card .name { font-size: 12px; font-weight: 600; }
-.ach-card .rarity { font-size: 10px; color: var(--muted); margin-top: 2px; }
-.ach-card .cond { font-size: 10px; color: var(--muted); margin-top: 4px; line-height: 1.3; }
-.ach-card .progress {
-  width: 100%; height: 3px;
-  background: rgba(255,255,255,.08);
-  border-radius: 4px;
-  margin-top: 6px;
-  overflow: hidden;
+.toast.show{opacity:1}
+/* Modal */
+.modal-overlay{
+  position:fixed;top:0;left:0;right:0;bottom:0;
+  background:rgba(0,0,0,.5);z-index:50;
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;pointer-events:none;transition:.3s;
 }
-.ach-card .progress .bar {
-  height: 100%;
-  background: var(--accent);
-  border-radius: 4px;
-  transition: .3s;
+.modal-overlay.show{opacity:1;pointer-events:auto}
+.modal-box{
+  background:#FFF;border-radius:20px;padding:28px;text-align:center;
+  max-width:300px;width:90%;
 }
-
-/* Stats tab */
-.stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.stat-card {
-  background: var(--card);
-  border-radius: 12px;
-  padding: 14px;
-  text-align: center;
-  border: 1px solid rgba(255,255,255,.06);
-}
-.stat-card .val { font-size: 28px; font-weight: 800; color: var(--accent); }
-.stat-card .lbl { font-size: 11px; color: var(--muted); margin-top: 2px; }
-
-.attr-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 6px 0;
-}
-.attr-row .name { width: 50px; font-size: 13px; flex-shrink: 0; }
-.attr-row .bar-wrap {
-  flex: 1;
-  height: 10px;
-  background: rgba(255,255,255,.08);
-  border-radius: 6px;
-  overflow: hidden;
-}
-.attr-row .bar-wrap .fill {
-  height: 100%;
-  border-radius: 6px;
-  transition: .5s;
-}
-.attr-row .num { width: 42px; font-size: 11px; color: var(--muted); text-align: right; }
-.fill-phys { background: linear-gradient(90deg, #e05555, #e8b830); }
-.fill-habit { background: linear-gradient(90deg, #5b9bd5, #7ec8e3); }
-.fill-know { background: linear-gradient(90deg, #7b68ee, #a78bfa); }
-.fill-speak { background: linear-gradient(90deg, #4caf84, #81c784); }
-
-.weight-log { margin-top: 12px; }
-.weight-entry {
-  display: flex;
-  justify-content: space-between;
-  padding: 6px 0;
-  font-size: 13px;
-  border-bottom: 1px solid rgba(255,255,255,.04);
-}
-.weight-change-down { color: var(--green); }
-.weight-change-up { color: var(--red); }
-
-.toast {
-  position: fixed;
-  top: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: var(--accent);
-  color: #1a1a2e;
-  padding: 10px 24px;
-  border-radius: 30px;
-  font-weight: 700;
-  font-size: 14px;
-  z-index: 100;
-  opacity: 0;
-  transition: .3s;
-  pointer-events: none;
-}
-.toast.show { opacity: 1; }
-
-.day-log {
-  background: var(--card);
-  border-radius: 12px;
-  padding: 12px;
-  margin-bottom: 10px;
-  border: 1px solid rgba(255,255,255,.06);
-  font-size: 13px;
-}
-.day-log .day-header {
-  font-weight: 700;
-  color: var(--accent);
-  margin-bottom: 6px;
-}
-.day-log .day-row { color: var(--muted); line-height: 1.6; }
-
-.modal-overlay {
-  position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(0,0,0,.8);
-  z-index: 50;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  opacity: 0;
-  pointer-events: none;
-  transition: .3s;
-}
-.modal-overlay.show { opacity: 1; pointer-events: auto; }
-.modal-box {
-  background: var(--card);
-  border-radius: 16px;
-  padding: 24px;
-  text-align: center;
-  max-width: 320px;
-  width: 90%;
-  border: 1px solid rgba(232,184,48,.3);
-}
-.modal-box .ach-icon { font-size: 56px; margin-bottom: 8px; }
-.modal-box .ach-name { font-size: 20px; font-weight: 800; color: var(--accent); }
-.modal-box .ach-rarity { font-size: 13px; color: var(--muted); margin-top: 4px; }
-.modal-box .ach-cond { font-size: 12px; color: var(--muted); margin-top: 8px; }
-
-.rarity-bronze { color: var(--bronze); }
-.rarity-silver { color: var(--silver); }
-.rarity-gold { color: var(--gold); }
-.rarity-platinum { color: #7ec8e3; }
-.rarity-legend { color: #e05555; }
-
-.pulse { animation: pulse 1s ease; }
-@keyframes pulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.08); }
-}
+.modal-box .micon{font-size:56px}
+.modal-box .mname{font-size:20px;font-weight:800;margin-top:8px}
+.modal-box .mrare{font-size:13px;color:var(--muted);margin-top:4px}
+.modal-box .mcond{font-size:12px;color:var(--muted);margin-top:6px}
+.pulse{animation:pulse 1s ease}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.1)}}
 </style>
 </head>
 <body>
 
-<header>
-  <div class="header-left">
-    <h1>🎮 人生RPG</h1>
-    <div class="title-badge" id="currentTitle">🌱 萌芽行者</div>
+<nav>
+  <div class="nv active" data-tab="home" onclick="switchPage('home')">
+    <span class="ni">🏠</span><span>首页</span>
   </div>
-  <div class="header-right">
-    <div class="xp">⚡ <span id="totalXP">0</span> XP</div>
-    <div class="streak">🔥 连续 <span id="streakDays">0</span> 天</div>
-    <div style="margin-top:2px">打卡 <span id="totalDays">0</span> 天</div>
+  <div class="nv" data-tab="achieve" onclick="switchPage('achieve')">
+    <span class="ni">🏆</span><span>成就</span>
   </div>
-</header>
+  <div class="nv" data-tab="history" onclick="switchPage('history')">
+    <span class="ni">📅</span><span>记录</span>
+  </div>
+  <div class="nv" data-tab="profile" onclick="switchPage('profile')">
+    <span class="ni">👤</span><span>个人</span>
+  </div>
+</nav>
 
-<div class="tabs">
-  <div class="tab active" onclick="switchTab('checkin')">📋 打卡</div>
-  <div class="tab" onclick="switchTab('achieve')">🏆 成就</div>
-  <div class="tab" onclick="switchTab('stats')">📊 数据</div>
-  <div class="tab" onclick="switchTab('history')">📜 记录</div>
+<!-- HOME -->
+<div class="page active" id="page-home">
+  <div class="topbar">
+    <h2>今日打卡</h2>
+    <span class="xp-badge">⚡<span id="hxp">0</span>XP</span>
+  </div>
+  <div class="card">
+    <h3>🏋️ 减肥</h3>
+    <div class="crow" onclick="toggleCheck('diet_water')"><div class="cb" id="cb-diet_water">✓</div><span class="lbl">🥤 喝够2L水</span><span class="xp">+10</span></div>
+    <div class="crow" onclick="toggleCheck('diet_nosnack')"><div class="cb" id="cb-diet_nosnack">✓</div><span class="lbl">🚫 不吃零食</span><span class="xp">+15</span></div>
+    <div class="crow" onclick="toggleCheck('diet_halfrice')"><div class="cb" id="cb-diet_halfrice">✓</div><span class="lbl">🍚 主食减半（午/晚）</span><span class="xp">+20</span></div>
+    <div class="crow" onclick="toggleCheck('diet_veggie')"><div class="cb" id="cb-diet_veggie">✓</div><span class="lbl">🥬 午/晚餐有蔬菜</span><span class="xp">+10</span></div>
+    <div class="crow" onclick="toggleCheck('diet_protein')"><div class="cb" id="cb-diet_protein">✓</div><span class="lbl">🍗 蛋白优先</span><span class="xp">+10</span></div>
+    <div class="crow" onclick="toggleCheck('diet_nolate')"><div class="cb" id="cb-diet_nolate">✓</div><span class="lbl">🌙 20:00后不进食</span><span class="xp">+15</span></div>
+    <div class="divider"></div>
+    <div style="font-size:12px;color:var(--muted)">⚖️ 今日体重（kg）</div>
+    <input type="number" id="weightInput" placeholder="81.20" step="0.01" inputmode="decimal">
+    <div style="font-size:12px;color:var(--muted);margin-top:8px">🍽️ 三餐简述</div>
+    <textarea id="dietNote" placeholder="早/午/晚各吃了什么"></textarea>
+    <div style="font-size:12px;color:var(--muted);margin-top:8px">🚫 违规记录（选填）</div>
+    <textarea id="dietPenalty" placeholder="含糖饮料/炸鸡烧烤/暴食"></textarea>
+  </div>
+  <div class="card">
+    <h3>⚡ 锻炼</h3>
+    <div class="crow" onclick="toggleCheck('ex_done')"><div class="cb" id="cb-ex_done">✓</div><span class="lbl">✅ 今日运动了</span><span class="xp">+10</span></div>
+    <input type="text" id="exDetail" placeholder="类型+时长">
+  </div>
+  <div class="card">
+    <h3>🎓 学习</h3>
+    <div class="crow" onclick="toggleCheck('study_done')"><div class="cb" id="cb-study_done">✓</div><span class="lbl">📖 今天学习了</span><span class="xp">+15</span></div>
+    <textarea id="studyDetail" placeholder="学了什么？3句话总结"></textarea>
+  </div>
+  <div class="card">
+    <h3>🗣️ 英语</h3>
+    <div class="crow" onclick="toggleCheck('eng_duolingo')"><div class="cb" id="cb-eng_duolingo">✓</div><span class="lbl">🟢 多邻国打卡</span><span class="xp">+20</span></div>
+    <input type="number" id="duoStreak" placeholder="多邻国连胜天数" inputmode="numeric">
+    <input type="text" id="engExtra" placeholder="额外练习（选填）" style="margin-top:6px">
+  </div>
+  <div class="card">
+    <h3>💭 今日一句话</h3>
+    <input type="text" id="dailyNote" placeholder="随便说什么都行">
+  </div>
+  <button class="btn btn-main" onclick="submitDay()">⚔️ 提交今日战报</button>
+  <button class="btn btn-ghost" onclick="exportData()">💾 导出备份</button>
+  <button class="btn btn-ghost" style="margin-top:4px" onclick="document.getElementById('importFile').click()">📥 导入备份</button>
+  <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(event)">
+  <div style="font-size:11px;color:var(--muted);text-align:center;margin:12px 0 20px">数据全存你手机里 · 换手机记得导出备份</div>
 </div>
 
-<main>
-  <!-- Check-in Form -->
-  <div class="form-section active" id="tab-checkin">
-    <div class="card">
-      <h3><span class="emoji">🏋️</span> 减肥</h3>
-      <div class="check-row" onclick="toggleCheck('diet_water')">
-        <div class="box" id="box-diet_water">✓</div>
-        <span class="label">🥤 喝够2L水</span>
-        <span class="xp-badge">+10</span>
-      </div>
-      <div class="check-row" onclick="toggleCheck('diet_nosnack')">
-        <div class="box" id="box-diet_nosnack">✓</div>
-        <span class="label">🚫 不吃零食</span>
-        <span class="xp-badge">+15</span>
-      </div>
-      <div class="check-row" onclick="toggleCheck('diet_halfrice')">
-        <div class="box" id="box-diet_halfrice">✓</div>
-        <span class="label">🍚 主食减半（午/晚）</span>
-        <span class="xp-badge">+20</span>
-      </div>
-      <div class="check-row" onclick="toggleCheck('diet_veggie')">
-        <div class="box" id="box-diet_veggie">✓</div>
-        <span class="label">🥬 午/晚餐有蔬菜</span>
-        <span class="xp-badge">+10</span>
-      </div>
-      <div class="check-row" onclick="toggleCheck('diet_protein')">
-        <div class="box" id="box-diet_protein">✓</div>
-        <span class="label">🍗 蛋白优先</span>
-        <span class="xp-badge">+10</span>
-      </div>
-      <div class="check-row" onclick="toggleCheck('diet_nolate')">
-        <div class="box" id="box-diet_nolate">✓</div>
-        <span class="label">🌙 20:00后不进食</span>
-        <span class="xp-badge">+15</span>
-      </div>
-      <div class="divider"></div>
-      <label style="font-size:13px;color:var(--muted)">⚖️ 今日体重（kg）</label>
-      <input type="number" id="weightInput" placeholder="83.10" step="0.01" inputmode="decimal">
-      <label style="font-size:13px;color:var(--muted);display:block;margin-top:8px">🍽️ 三餐简述</label>
-      <textarea id="dietNote" placeholder="早/午/晚各吃了什么？"></textarea>
-      <label style="font-size:13px;color:var(--muted);display:block;margin-top:8px">🚫 违规记录（选填）</label>
-      <textarea id="dietPenalty" placeholder="含糖饮料/炸鸡烧烤/暴食——诚实记录，扣分不可耻"></textarea>
-    </div>
-
-    <div class="card">
-      <h3><span class="emoji">⚡</span> 锻炼</h3>
-      <div class="check-row" onclick="toggleCheck('ex_done')">
-        <div class="box" id="box-ex_done">✓</div>
-        <span class="label">✅ 今日运动了</span>
-        <span class="xp-badge">+10</span>
-      </div>
-      <input type="text" id="exDetail" placeholder="类型 + 时长（如：热身5分钟、散步15分钟）">
-    </div>
-
-    <div class="card">
-      <h3><span class="emoji">🎓</span> 学习</h3>
-      <div class="check-row" onclick="toggleCheck('study_done')">
-        <div class="box" id="box-study_done">✓</div>
-        <span class="label">📖 今天学习了</span>
-        <span class="xp-badge">+15</span>
-      </div>
-      <textarea id="studyDetail" placeholder="学了什么？3句话总结一下"></textarea>
-    </div>
-
-    <div class="card">
-      <h3><span class="emoji">🗣️</span> 英语</h3>
-      <div class="check-row" onclick="toggleCheck('eng_duolingo')">
-        <div class="box" id="box-eng_duolingo">✓</div>
-        <span class="label">🟢 多邻国打卡完成</span>
-        <span class="xp-badge">+20</span>
-      </div>
-      <label style="font-size:13px;color:var(--muted)">🔥 多邻国连胜天数</label>
-      <input type="number" id="duoStreak" placeholder="1" inputmode="numeric">
-      <label style="font-size:13px;color:var(--muted);display:block;margin-top:8px">额外练习（选填）</label>
-      <input type="text" id="engExtra" placeholder="如：影子跟读、自言自语">
-    </div>
-
-    <div class="card">
-      <h3><span class="emoji">💭</span> 今日一句话</h3>
-      <input type="text" id="dailyNote" placeholder="随便说什么都行">
-    </div>
-
-    <button class="btn btn-submit" onclick="submitDay()">⚔️ 提交今日战报</button>
-    <button class="btn btn-backup" onclick="exportData()">💾 导出备份</button>
-    <button class="btn btn-backup" onclick="document.getElementById('importFile').click()" style="margin-top:4px">📥 导入备份</button>
-    <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(event)">
-    <div style="font-size:11px;color:var(--muted);text-align:center;margin-top:8px">
-      数据全存你手机里 · 换手机记得导出备份
-    </div>
+<!-- ACHIEVE -->
+<div class="page" id="page-achieve">
+  <div class="topbar"><h2>成就</h2><span style="color:var(--muted);font-size:14px">已解锁 <b id="achCount">0</b></span></div>
+  <div class="subtabs">
+    <div class="st ac" onclick="switchAchSubtap('unlocked')">🌟 已获得</div>
+    <div class="st" onclick="switchAchSubtap('locked')">🔒 进行中</div>
   </div>
+  <div class="ach-grid" id="achGrid"></div>
+</div>
 
-  <!-- Achievements Tab -->
-  <div class="form-section" id="tab-achieve">
-    <div style="margin-bottom:12px">
-      <span style="font-size:13px;color:var(--muted)">已解锁 </span>
-      <span style="font-weight:700;color:var(--accent)" id="achUnlocked">0</span>
-      <span style="font-size:13px;color:var(--muted)"> / 40+ 个成就</span>
-    </div>
-    <div class="ach-grid" id="achGrid"></div>
+<!-- HISTORY -->
+<div class="page" id="page-history">
+  <div class="topbar"><h2>记录</h2></div>
+  <div class="cal-header">
+    <button onclick="calShift(-1)">◀</button>
+    <span class="month" id="calMonth"></span>
+    <button onclick="calShift(1)">▶</button>
   </div>
+  <div class="cal-grid" id="calGrid"></div>
+  <div class="cal-detail" id="calDetail"></div>
+</div>
 
-  <!-- Stats Tab -->
-  <div class="form-section" id="tab-stats">
-    <div class="stat-grid">
-      <div class="stat-card"><div class="val" id="statTotalDays">0</div><div class="lbl">累计打卡天数</div></div>
-      <div class="stat-card"><div class="val" id="statStreak">0</div><div class="lbl">最长连续打卡</div></div>
-      <div class="stat-card"><div class="val" id="statWeight">83.10</div><div class="lbl">最新体重 (kg)</div></div>
-      <div class="stat-card"><div class="val" id="statWeightChange">—</div><div class="lbl">体重变化</div></div>
-    </div>
-
-    <div class="card" style="margin-top:12px">
-      <h3>📊 四维属性</h3>
-      <div class="attr-row"><span class="name">🏋️ 体魄</span><div class="bar-wrap"><div class="fill fill-phys" id="fill-phys" style="width:0%"></div></div><span class="num" id="num-phys">0/100</span></div>
-      <div class="attr-row"><span class="name">⚡ 习惯</span><div class="bar-wrap"><div class="fill fill-habit" id="fill-habit" style="width:0%"></div></div><span class="num" id="num-habit">0/100</span></div>
-      <div class="attr-row"><span class="name">🎓 学识</span><div class="bar-wrap"><div class="fill fill-know" id="fill-know" style="width:0%"></div></div><span class="num" id="num-know">0/100</span></div>
-      <div class="attr-row"><span class="name">🗣️ 表达</span><div class="bar-wrap"><div class="fill fill-speak" id="fill-speak" style="width:0%"></div></div><span class="num" id="num-speak">0/100</span></div>
-    </div>
-
-    <div class="card">
-      <h3>⚖️ 体重记录</h3>
-      <div class="weight-log" id="weightLog"></div>
-    </div>
-
-    <div class="card">
-      <h3>🏅 称号进度</h3>
-      <div id="titleProgress"></div>
-    </div>
+<!-- PROFILE -->
+<div class="page" id="page-profile">
+  <div class="topbar"><h2>个人</h2></div>
+  <div class="prof-avatar">L</div>
+  <div class="prof-name">SY</div>
+  <div class="prof-title" id="profTitle">🌱 萌芽行者</div>
+  <div class="stat-row">
+    <div class="stat-box"><div class="val" id="pTotalDays">0</div><div class="lbl">累计打卡</div></div>
+    <div class="stat-box"><div class="val" id="pStreak">0</div><div class="lbl">连续天数</div></div>
+    <div class="stat-box"><div class="val" id="pWeight">81.20</div><div class="lbl">当前体重 kg</div></div>
+    <div class="stat-box"><div class="val" id="pWeightChg">—</div><div class="lbl">体重变化</div></div>
   </div>
-
-  <!-- History Tab -->
-  <div class="form-section" id="tab-history">
-    <div id="historyList"></div>
+  <div class="card attr-box" style="margin-top:12px">
+    <h3>四维属性</h3>
+    <div class="ar"><span class="an">🏋️ 体魄</span><div class="aw"><div class="af" id="af-phys" style="width:0%;background:linear-gradient(90deg,#FF9500,#FF3B30)"></div></div><span class="av" id="av-phys">0</span></div>
+    <div class="ar"><span class="an">⚡ 习惯</span><div class="aw"><div class="af" id="af-habit" style="width:0%;background:linear-gradient(90deg,#007AFF,#5AC8FA)"></div></div><span class="av" id="av-habit">0</span></div>
+    <div class="ar"><span class="an">🎓 学识</span><div class="aw"><div class="af" id="af-know" style="width:0%;background:linear-gradient(90deg,#5856D6,#AF52DE)"></div></div><span class="av" id="av-know">0</span></div>
+    <div class="ar"><span class="an">🗣️ 表达</span><div class="aw"><div class="af" id="af-speak" style="width:0%;background:linear-gradient(90deg,#34C759,#30D158)"></div></div><span class="av" id="av-speak">0</span></div>
   </div>
-</main>
+  <div class="card" style="margin-top:12px">
+    <h3>🏅 称号进度</h3>
+    <div id="titleProg"></div>
+  </div>
+</div>
 
 <div class="toast" id="toast"></div>
 <div class="modal-overlay" id="achModal" onclick="closeModal()">
   <div class="modal-box" onclick="event.stopPropagation()">
-    <div class="ach-icon pulse" id="modalIcon"></div>
-    <div class="ach-name" id="modalName"></div>
-    <div class="ach-rarity" id="modalRarity"></div>
-    <div class="ach-cond" id="modalCond"></div>
+    <div class="micon pulse" id="mIcon"></div>
+    <div class="mname" id="mName"></div>
+    <div class="mrare" id="mRare"></div>
+    <div class="mcond" id="mCond"></div>
   </div>
 </div>
 
 <script>
-// ======== DATA ENGINE ========
+// ======== DATA ========
 const ALL_ACHIEVEMENTS = [
-  // 减肥 (12)
   { id:'diet_3day', icon:'🥉', name:'初尝节制', rarity:'铜', cat:'diet', cond:'连续3天完成所有减肥任务', check: d=>d.dietPerfectStreak>=3 },
   { id:'diet_7day', icon:'🥈', name:'七日之约', rarity:'银', cat:'diet', cond:'连续7天完成所有减肥任务', check: d=>d.dietPerfectStreak>=7 },
   { id:'diet_80', icon:'🛡️', name:'破八零勇士', rarity:'银', cat:'diet', cond:'体重首次 < 80kg', check: d=>d.minWeight<80 },
   { id:'diet_08kg', icon:'⚡', name:'闪电瘦身', rarity:'银', cat:'diet', cond:'单周减重 ≥ 0.8kg', check: d=>d.bestWeekLoss>=0.8 },
   { id:'diet_4week', icon:'📉', name:'稳定下滑', rarity:'金', cat:'diet', cond:'连续4周体重下降', check: d=>d.weightDownWeeks>=4 },
-  { id:'diet_bmi24', icon:'🎯', name:'标准身材', rarity:'金', cat:'diet', cond:'BMI < 24 (体重 < 72.7kg)', check: d=>d.minWeight<72.7 },
+  { id:'diet_bmi24', icon:'🎯', name:'标准身材', rarity:'金', cat:'diet', cond:'BMI < 24', check: d=>d.minWeight<72.7 },
   { id:'diet_abs', icon:'💪', name:'腹肌初现', rarity:'铂金', cat:'diet', cond:'能看见腹肌轮廓', check: ()=>false },
-  { id:'diet_peak', icon:'🏔️', name:'巅峰之躯', rarity:'铂金', cat:'diet', cond:'BMI 21-23，体脂 < 18%', check: ()=>false },
+  { id:'diet_peak', icon:'🏔️', name:'巅峰之躯', rarity:'铂金', cat:'diet', cond:'BMI 21-23 体脂<18%', check: ()=>false },
   { id:'diet_nosugar14', icon:'🚫', name:'禁糖战士', rarity:'银', cat:'diet', cond:'连续14天不喝含糖饮料', check: d=>d.noSugarStreak>=14 },
   { id:'diet_nosugar30', icon:'🔥', name:'代谢觉醒', rarity:'金', cat:'diet', cond:'连续30天不喝含糖饮料', check: d=>d.noSugarStreak>=30 },
   { id:'diet_cook7', icon:'🥗', name:'厨房掌控者', rarity:'银', cat:'diet', cond:'连续7天自己做饭', check: ()=>false },
   { id:'diet_75', icon:'🎮', name:'轻量级选手', rarity:'金', cat:'diet', cond:'体重降至75kg以下', check: d=>d.minWeight<75 },
-
-  // 锻炼 (10)
   { id:'ex_first', icon:'👟', name:'第一步', rarity:'铜', cat:'ex', cond:'完成第1次运动打卡', check: d=>d.exTotalDays>=1 },
   { id:'ex_3day', icon:'🔥', name:'连续出击', rarity:'铜', cat:'ex', cond:'连续运动打卡3天', check: d=>d.exStreak>=3 },
   { id:'ex_7day', icon:'⚡', name:'习惯火花', rarity:'银', cat:'ex', cond:'连续运动打卡7天', check: d=>d.exStreak>=7 },
@@ -534,34 +331,27 @@ const ALL_ACHIEVEMENTS = [
   { id:'ex_100', icon:'💯', name:'百次挥拳', rarity:'铂金', cat:'ex', cond:'累计100次运动打卡', check: d=>d.exTotalDays>=100 },
   { id:'ex_morning7', icon:'🌅', name:'晨光行者', rarity:'金', cat:'ex', cond:'连续7天早上运动', check: ()=>false },
   { id:'ex_5k', icon:'🏃', name:'五公里征服者', rarity:'金', cat:'ex', cond:'不间断跑完5公里', check: ()=>false },
-
-  // 学习 (10)
   { id:'study_first', icon:'📖', name:'初入学术之门', rarity:'铜', cat:'study', cond:'完成第1次学习打卡', check: d=>d.studyTotalDays>=1 },
   { id:'study_10', icon:'📚', name:'十页积累', rarity:'铜', cat:'study', cond:'累计10次学习打卡', check: d=>d.studyTotalDays>=10 },
   { id:'study_30', icon:'🧠', name:'知识收割者', rarity:'银', cat:'study', cond:'累计30次学习打卡', check: d=>d.studyTotalDays>=30 },
   { id:'study_50', icon:'🎓', name:'学术学徒', rarity:'金', cat:'study', cond:'累计50次学习打卡', check: d=>d.studyTotalDays>=50 },
   { id:'study_paper1', icon:'📄', name:'论文破壁人', rarity:'银', cat:'study', cond:'精读完第1篇硕士论文', check: ()=>false },
   { id:'study_paper3', icon:'🔬', name:'三篇之力', rarity:'金', cat:'study', cond:'精读完3篇硕士论文', check: ()=>false },
-  { id:'study_zotero', icon:'🗂️', name:'文献管理者', rarity:'铜', cat:'study', cond:'用Zotero建立第一个文献库', check: ()=>false },
+  { id:'study_zotero', icon:'🗂️', name:'文献管理者', rarity:'铜', cat:'study', cond:'用Zotero建文献库', check: ()=>false },
   { id:'study_markdown', icon:'✍️', name:'笔记大师', rarity:'铜', cat:'study', cond:'写出第1篇结构化笔记', check: ()=>false },
   { id:'study_ppt', icon:'🎤', name:'学术演讲者', rarity:'金', cat:'study', cond:'完成第1次学术PPT汇报', check: ()=>false },
   { id:'study_ready', icon:'🏛️', name:'入学就绪', rarity:'铂金', cat:'study', cond:'开学前完成所有模块', check: ()=>false },
-
-  // 英语 (8)
   { id:'eng_first', icon:'🟢', name:'多邻新人', rarity:'铜', cat:'eng', cond:'完成第1次多邻国打卡', check: d=>d.engTotalDays>=1 },
   { id:'eng_7day', icon:'🎤', name:'七日连胜', rarity:'银', cat:'eng', cond:'多邻国连续打卡7天', check: d=>d.engStreak>=7 },
   { id:'eng_30day', icon:'🔥', name:'月度战士', rarity:'金', cat:'eng', cond:'多邻国连续打卡30天', check: d=>d.engStreak>=30 },
   { id:'eng_diamond', icon:'💎', name:'钻石段位', rarity:'金', cat:'eng', cond:'多邻国段位达到钻石', check: ()=>false },
   { id:'eng_speak7', icon:'🎤', name:'七日开口', rarity:'银', cat:'eng', cond:'连续7天口语练习', check: ()=>false },
-  { id:'eng_3min', icon:'💬', name:'自我叙述者', rarity:'金', cat:'eng', cond:'能用英语连续说3分钟', check: ()=>false },
-  { id:'eng_native', icon:'🌍', name:'口语觉醒', rarity:'铂金', cat:'eng', cond:'第一次不需要脑中翻译', check: ()=>false },
-  
+  { id:'eng_3min', icon:'💬', name:'自我叙述者', rarity:'金', cat:'eng', cond:'英语连续说3分钟', check: ()=>false },
+  { id:'eng_native', icon:'🌍', name:'口语觉醒', rarity:'铂金', cat:'eng', cond:'不需脑中翻译', check: ()=>false },
+  { id:'eng_100', icon:'🏅', name:'百日连胜', rarity:'铂金', cat:'eng', cond:'多邻国累计100天', check: d=>d.engTotalDays>=100 },
 ];
 
-// ═══════════════════════════════════════════
-//  HIDDEN ACHIEVEMENTS (base64 encoded)
-//  These won't appear in DOM until unlocked
-// ═══════════════════════════════════════════
+// Hidden achievements (base64 encoded)
 const HIDDEN_ENCODED = [
 'aF92YWxvcmFudHzwn46ufOeTpue9l+WFsOeJueS8keWBh3zph5F86L+e57utM+Wkqeavj+aXpeS4gOWPpeivneaPkOWIsOS4jeaJk+eTpnxrZXl3b3JkXzNkYXk=',
 'aF9naXJsZnJpZW5kfPCfkpV85oGL54ix6ISR5a6e6ZSkfOmTtnzntK/orqE15qyh5q+P5pel5LiA5Y+l6K+d5o+Q5Yiw5aWz5pyL5Y+L5oiW5aW5fGtleXdvcmRfY291bnQ1',
@@ -580,7 +370,7 @@ const HIDDEN_ENCODED = [
 'aF9oYWxmcmljZXzwn42afOWNiueil+mlreWkp+W4iHzph5F86L+e57utMTTlpKnkuLvpo5/lh4/ljYrlhajpg6jli77pgIl8aGFsZnJpY2VfMTQ=',
 'aF81a2d88J+Or3zljYHmlqTkuYvnuqZ86YeRfOS9k+mHjemZjeiHszc2LjJrZ+S7peS4izrlh4/ph401a2d8d2VpZ2h0XzVrZw==',
 'aF9ub3N1Z2FyMzB88J+MmXznpoHns5bmu6HmnIh86YeRfOi/nue7rTMw5aSp5peg5ZCr57OW6aWu5paZ5oOp572afG5vc3VnYXJfMzA=',
-'aF9ob2xpZGF5fPCfjorohYLml6Xlvanoi58mTnOe5quaVu+WumuagoOS8geiKguaXpeW9k+WkqeaJk+WNoXxob2xpZGF5',
+'aF9ob2xpZGF5fPCfjo86IqC5pei9kepopvpk7Z85Zyo5rOV5a6a5oKo5LyB6IqC5pel5b2T5aSp5omT5Y2hfGhvbGlkYXk=',
 'aF9yZXBlbnR88J+YiHzmmrTpo5/lv4/mgpR86ZOcfOacieaatOmjn+aDqee9muS9huasoeaXpeWHj+iCpeWFremhueWFqOa7oXxyZXBlbnQ=',
 'aF9jb25maWRlbnR88J+Xo++4j3zoi7Hor63oh6rkv6F86ZOcfOiLseivremineWkluWkh+azqOWMheWQq+eugOWNlS3kuI3pmr4t5Lya5LqGfGVuZ19jb25maWRlbnQ=',
 'aF9vdXRnb2luZ3zwn46SfOWHuumXqOa1quS6hnzpk7Z86L+e57utM+Wkqemlrumjn+iusOW9leaXoOiHquW3seWBmuS4lOavj+aXpeaVo+atpXxvdXRnb2luZw==',
@@ -589,715 +379,370 @@ const HIDDEN_ENCODED = [
 'aF9wZXJmZWN0X3dlZWt84q2QfOWujOe+juS4gOWRqHzpk4Lph5F86L+e57utN+WkqeWbm+adoee6v+WFqOmDqOaJk+WNoXxwZXJmZWN0X3dlZWs=',
 ];
 
-function decodeHidden(b64) {
-  try { return decodeURIComponent(escape(atob(b64))).split('|'); } catch(e) { return null; }
-}
+function decodeHidden(b64){try{return decodeURIComponent(escape(atob(b64))).split('|')}catch(e){return null}}
+function getHiddenAchievements(){return HIDDEN_ENCODED.map(function(e){var p=decodeHidden(e);if(!p)return null;return{id:p[0],icon:p[1],name:p[2],rarity:p[3],cond:p[4],checkType:p[5],hidden:true}}).filter(Boolean)}
 
-function getHiddenAchievements() {
-  return HIDDEN_ENCODED.map(function(e) {
-    var parts = decodeHidden(e);
-    if (!parts) return null;
-    return { id: parts[0], icon: parts[1], name: parts[2], rarity: parts[3], cond: parts[4], checkType: parts[5], hidden: true };
-  }).filter(Boolean);
-}
+function checkHidden(ach, derived, rawData){
+  var days=rawData.days;if(!days.length)return false;
+  var last=days[days.length-1],ct=ach.checkType;
 
-function checkHidden(ach, derived, rawData) {
-  var days = rawData.days;
-  if (!days.length) return false;
-
-  var last = days[days.length-1];
-  var ct = ach.checkType;
-
-  // Helper: keyword count in a specific field
-  function kwCount(field, keywords, caseSens) {
-    var c = 0;
-    for (var i = 0; i < days.length; i++) {
-      var val = (days[i][field] || '').toLowerCase();
-      for (var j = 0; j < keywords.length; j++) {
-        if (val.indexOf(keywords[j].toLowerCase()) >= 0) { c++; break; }
-      }
+  function kwStreak(field,keywords){
+    var s=0;
+    for(var i=days.length-1;i>=0;i--){
+      var val=(days[i][field]||'').toLowerCase(),found=false;
+      for(var j=0;j<keywords.length;j++){if(val.indexOf(keywords[j].toLowerCase())>=0){found=true;break}}
+      if(found)s++;else break;
+    }
+    return s;
+  }
+  function kwCount(field,keywords){
+    var c=0;
+    for(var i=0;i<days.length;i++){
+      var val=(days[i][field]||'').toLowerCase(),found=false;
+      for(var j=0;j<keywords.length;j++){if(val.indexOf(keywords[j].toLowerCase())>=0){found=true;break}}
+      if(found)c++;
     }
     return c;
   }
 
-  // Helper: consecutive days with keyword in field
-  function kwStreak(field, keywords) {
-    var s = 0;
-    for (var i = days.length-1; i >= 0; i--) {
-      var val = (days[i][field] || '').toLowerCase();
-      var found = false;
-      for (var j = 0; j < keywords.length; j++) {
-        if (val.indexOf(keywords[j].toLowerCase()) >= 0) { found = true; break; }
-      }
-      if (found) s++; else break;
-    }
-    return s;
-  }
-
-  // Helper: consecutive days with field containing any keyword
-  function fieldStreak(field, keywords) {
-    var s = 0;
-    for (var i = days.length-1; i >= 0; i--) {
-      var val = (days[i][field] || '').toLowerCase();
-      var found = false;
-      for (var j = 0; j < keywords.length; j++) {
-        if (val.indexOf(keywords[j].toLowerCase()) >= 0) { found = true; break; }
-      }
-      if (found) s++; else break;
-    }
-    return s;
-  }
-
-  switch(ct) {
-    case 'keyword_3day':
-      return kwStreak('dailyNote', ['不打瓦','瓦']) >= 3;
-    case 'keyword_count5':
-      return kwCount('dailyNote', ['女朋友','她','对象']) >= 5;
-    case 'cook_7day':
-      return fieldStreak('dietNote', ['自己做','自己炒','自己煮','自己烤','自己炖','自己拌','自己煎','home made']) >= 7;
-    case 'rabbit_3day':
-      return fieldStreak('dietNote', ['黄瓜','番茄','西红柿','沙拉','生菜','水果','苹果','梨','不吃','代餐','轻食']) >= 3;
-    case 'time_late':
-      if (!last.submittedAt) return false;
-      var h = new Date(last.submittedAt).getHours();
-      return h >= 23 || h < 3;
-    case 'time_early':
-      if (!last.submittedAt) return false;
-      var h = new Date(last.submittedAt).getHours();
-      var m = new Date(last.submittedAt).getMinutes();
-      return (h === 6) || (h === 7 && m <= 30);
-    case 'time_noon':
-      if (!last.submittedAt) return false;
-      var h = new Date(last.submittedAt).getHours();
-      return h >= 11 && h <= 14;
-    case 'time_bald':
-      if (!last.submittedAt) return false;
-      var h = new Date(last.submittedAt).getHours();
-      return h >= 0 && h < 3;
-    case 'all_nine':
-      var all9 = last.dietWater && last.dietNoSnack && last.dietHalfRice && last.dietVeggie && last.dietProtein && last.dietNoLate && last.exDone && last.studyDone && last.engDuolingo;
-      return all9;
-    case 'weight_up1':
-      if (days.length < 2) return false;
-      var prev = days[days.length-2].weight;
-      var cur = last.weight;
-      return prev && cur && cur > prev;
-    case 'weight_up3':
-      if (days.length < 4) return false;
-      for (var i = days.length-3; i <= days.length-1; i++) {
-        var a = days[i-1], b = days[i];
-        if (!a || !b || !a.weight || !b.weight) return false;
-        if (b.weight <= a.weight) return false;
-      }
-      return true;
-    case 'pigeon':
-      return last.exDone && last.exDetail && /(不[太想]|[好累]|累[死了]|休息|偷懒|不想动|懒得)/.test(last.exDetail);
-    case 'study_forgot':
-      return last.studyDone && /(忘[了记]|记不[住得]|没记住|不知道|不记得)/.test(last.studyDetail||'');
-    case 'bike5':
-      var cnt = 0;
-      for (var i = 0; i < days.length; i++) {
-        if (days[i].exDetail && /(骑行|骑车|自行车|单车)/.test(days[i].exDetail)) cnt++;
-      }
-      return cnt >= 5;
-    case 'halfrice_14':
-      var s = 0;
-      for (var i = days.length-1; i >= 0; i--) {
-        if (days[i].dietHalfRice) s++; else break;
-      }
-      return s >= 14;
-    case 'weight_5kg':
-      return derived.minWeight < 76.2;
-    case 'nosugar_30':
-      var nos = 0;
-      for (var i = days.length-1; i >= 0; i--) {
-        if (!days[i].dietPenalty || days[i].dietPenalty.indexOf('含糖') < 0) nos++;
-        else break;
-      }
-      return nos >= 30;
-    case 'holiday':
-      if (!last.submittedAt) return false;
-      var d = new Date(last.submittedAt);
-      var m = d.getMonth()+1, day = d.getDate();
-      // Chinese holidays + weekends
-      var holidays = [
-        '1-1','1-2','1-3', // 元旦
-        '5-1','5-2','5-3', // 劳动节
-        '10-1','10-2','10-3','10-4','10-5','10-6','10-7', // 国庆
-      ];
-      var md = m+'-'+day;
-      var dow = d.getDay();
-      if (dow === 0 || dow === 6) return true;
-      for (var i = 0; i < holidays.length; i++) { if (holidays[i] === md) return true; }
-      // Lunar New Year rough dates (2025-2027)
-      if ((m===1 && day>=28) || (m===2 && day<=15)) return true;
-      return false;
-    case 'repent':
-      if (days.length < 2) return false;
-      var yesterday = days[days.length-2];
-      var hadBinge = yesterday.dietPenalty && yesterday.dietPenalty.indexOf('暴食') >= 0;
-      var todayPerfect = last.dietWater && last.dietNoSnack && last.dietHalfRice && last.dietVeggie && last.dietProtein && last.dietNoLate;
-      return hadBinge && todayPerfect;
-    case 'eng_confident':
-      return last.engExtra && /(简[单单]|不难|容[易易]|会了|懂[了得]|还行|挺[好简])/.test(last.engExtra);
-    case 'outgoing':
-      if (days.length < 3) return false;
-      for (var i = days.length-3; i < days.length; i++) {
-        var d = days[i];
-        var note = (d.dietNote||'').toLowerCase();
-        if (note.indexOf('自己做') >= 0 || note.indexOf('自己炒') >= 0 || note.indexOf('自己煮') >= 0) return false;
-        if (!d.exDetail || !/(散步|走路|逛)/.test(d.exDetail)) return false;
-      }
-      return true;
-    case 'weight_107':
-      if (!last.weight) return false;
-      var dec = (last.weight % 1).toFixed(2);
-      return dec === '0.07' || dec === '0.70';
-    case 'hotpot_day':
-      return last.dietPenalty && last.dietPenalty.indexOf('含糖') >= 0 && (last.dietPenalty.indexOf('火锅') >= 0 || last.dietPenalty.indexOf('烧烤') >= 0);
-    case 'perfect_week':
-      var ps = 0;
-      for (var i = days.length-1; i >= 0; i--) {
-        var d = days[i];
-        if (d.dietWater && d.dietNoSnack && d.dietHalfRice && d.dietVeggie && d.dietProtein && d.dietNoLate && d.exDone && d.studyDone && d.engDuolingo) ps++;
-        else break;
-      }
-      return ps >= 7;
-    default:
-      return false;
+  switch(ct){
+    case'keyword_3day':return kwStreak('dailyNote',['不打瓦','瓦'])>=3;
+    case'keyword_count5':return kwCount('dailyNote',['女朋友','她','对象'])>=5;
+    case'cook_7day':return kwStreak('dietNote',['自己做','自己炒','自己煮','自己烤','自己炖','自己拌','自己煎'])>=7;
+    case'rabbit_3day':return kwStreak('dietNote',['黄瓜','番茄','西红柿','沙拉','水果','不吃','轻食'])>=3;
+    case'time_late':if(!last.submittedAt)return false;var h=new Date(last.submittedAt).getHours();return h>=23||h<3;
+    case'time_early':if(!last.submittedAt)return false;var h2=new Date(last.submittedAt).getHours(),m2=new Date(last.submittedAt).getMinutes();return h2===6||(h2===7&&m2<=30);
+    case'time_noon':if(!last.submittedAt)return false;var h3=new Date(last.submittedAt).getHours();return h3>=11&&h3<=14;
+    case'time_bald':if(!last.submittedAt)return false;var h4=new Date(last.submittedAt).getHours();return h4>=0&&h4<3;
+    case'all_nine':return last.dietWater&&last.dietNoSnack&&last.dietHalfRice&&last.dietVeggie&&last.dietProtein&&last.dietNoLate&&last.exDone&&last.studyDone&&last.engDuolingo;
+    case'weight_up1':if(days.length<2)return false;var pw=days[days.length-2].weight;return pw&&last.weight&&last.weight>pw;
+    case'weight_up3':if(days.length<4)return false;for(var i=days.length-3;i<=days.length-1;i++){var a=days[i-1],b=days[i];if(!a||!b||!a.weight||!b.weight)return false;if(b.weight<=a.weight)return false}return true;
+    case'pigeon':return last.exDone&&last.exDetail&&/(不[太想]|[好累]|累[死了]|休息|偷懒|不想动|懒得)/.test(last.exDetail);
+    case'study_forgot':return last.studyDone&&/(忘[了记]|记不[住得]|没记住|不知道|不记得)/.test(last.studyDetail||'');
+    case'bike5':var cnt=0;for(var i=0;i<days.length;i++){if(days[i].exDetail&&/(骑行|骑车|自行车|单车)/.test(days[i].exDetail))cnt++}return cnt>=5;
+    case'halfrice_14':var s=0;for(var i=days.length-1;i>=0;i--){if(days[i].dietHalfRice)s++;else break}return s>=14;
+    case'weight_5kg':return derived.minWeight<76.2;
+    case'nosugar_30':var nos=0;for(var i=days.length-1;i>=0;i--){if(!days[i].dietPenalty||days[i].dietPenalty.indexOf('含糖')<0)nos++;else break}return nos>=30;
+    case'holiday':if(!last.submittedAt)return false;var d2=new Date(last.submittedAt),mo=d2.getMonth()+1,da=d2.getDate(),dw=d2.getDay();if(dw===0||dw===6)return true;var hols=['1-1','1-2','1-3','5-1','5-2','5-3','10-1','10-2','10-3','10-4','10-5','10-6','10-7'];var md=mo+'-'+da;for(var i=0;i<hols.length;i++){if(hols[i]===md)return true}if((mo===1&&da>=28)||(mo===2&&da<=15))return true;return false;
+    case'repent':if(days.length<2)return false;var yest=days[days.length-2];var hadBinge=yest.dietPenalty&&yest.dietPenalty.indexOf('暴食')>=0;var todayPerfect=last.dietWater&&last.dietNoSnack&&last.dietHalfRice&&last.dietVeggie&&last.dietProtein&&last.dietNoLate;return hadBinge&&todayPerfect;
+    case'eng_confident':return last.engExtra&&/(简[单单]|不难|容[易易]|会了|懂[了得]|还行|挺[好简])/.test(last.engExtra);
+    case'outgoing':if(days.length<3)return false;for(var i=days.length-3;i<days.length;i++){var d=days[i],note=(d.dietNote||'').toLowerCase();if(note.indexOf('自己做')>=0)return false;if(!d.exDetail||!(/散步|走路|逛/.test(d.exDetail)))return false}return true;
+    case'weight_107':if(!last.weight)return false;var dec=(last.weight%1).toFixed(2);return dec==='0.07'||dec==='0.70';
+    case'hotpot_day':return last.dietPenalty&&last.dietPenalty.indexOf('含糖')>=0&&(last.dietPenalty.indexOf('火锅')>=0||last.dietPenalty.indexOf('烧烤')>=0);
+    case'perfect_week':var ps=0;for(var i=days.length-1;i>=0;i--){var d=days[i];if(d.dietWater&&d.dietNoSnack&&d.dietHalfRice&&d.dietVeggie&&d.dietProtein&&d.dietNoLate&&d.exDone&&d.studyDone&&d.engDuolingo)ps++;else break}return ps>=7;
+    default:return false;
   }
 }
 
+const TITLES=[{name:'🌱 萌芽行者',days:7},{name:'🌿 成长旅人',days:30},{name:'🌳 坚定守望者',days:60},{name:'🏰 自律之王',days:100},{name:'⭐ 传奇建造者',days:365}];
+const DEFAULT_DATA={days:[],unlockedAch:[],totalXP:0,physXP:0,habitXP:0,knowXP:0,speakXP:0,noSugarStreak:0,minWeight:81.20,bestWeekLoss:0,weightDownWeeks:0,hasStrength:false};
+let DATA=loadData();
+function loadData(){try{var raw=localStorage.getItem('liferpg_data');if(!raw)return JSON.parse(JSON.stringify(DEFAULT_DATA));return Object.assign(JSON.parse(JSON.stringify(DEFAULT_DATA)),JSON.parse(raw))}catch(e){return JSON.parse(JSON.stringify(DEFAULT_DATA))}}
+function saveData(){localStorage.setItem('liferpg_data',JSON.stringify(DATA))}
 
-const TITLES = [
-  { name:'🌱 萌芽行者', days:7 },
-  { name:'🌿 成长旅人', days:30 },
-  { name:'🌳 坚定守望者', days:60 },
-  { name:'🏰 自律之王', days:100 },
-  { name:'⭐ 传奇建造者', days:365 },
-];
-
-const DEFAULT_DATA = {
-  days: [],
-  unlockedAch: [],
-  totalXP: 0,
-  physXP: 0, habitXP: 0, knowXP: 0, speakXP: 0,
-  noSugarStreak: 0,
-  minWeight: 81.20,
-  bestWeekLoss: 0,
-  weightDownWeeks: 0,
-  hasStrength: false,
-};
-
-let DATA = loadData();
-
-function loadData() {
-  try {
-    const raw = localStorage.getItem('liferpg_data');
-    if (!raw) return JSON.parse(JSON.stringify(DEFAULT_DATA));
-    const d = JSON.parse(raw);
-    // Merge with defaults for new fields
-    return { ...JSON.parse(JSON.stringify(DEFAULT_DATA)), ...d };
-  } catch(e) { return JSON.parse(JSON.stringify(DEFAULT_DATA)); }
-}
-
-function saveData() { localStorage.setItem('liferpg_data', JSON.stringify(DATA)); }
-
-function computeDerived() {
-  const days = DATA.days;
-  // Total days
-  const totalDays = days.length;
-  const totalXP = DATA.totalXP;
-
-  // Current streak
-  let streak = 0;
-  const today = new Date().toISOString().slice(0,10);
-  for (let i = days.length-1; i >= 0; i--) {
-    const expected = new Date();
-    expected.setDate(expected.getDate() - (days.length-1 - i));
-    const expStr = expected.toISOString().slice(0,10);
-    if (days[i].date === expStr || (i===days.length-1 && days[i].date===today)) {
-      streak++;
-    } else { break; }
+function computeDerived(){
+  var days=DATA.days,today=new Date().toISOString().slice(0,10);
+  var streak2=0,checkDate=new Date();
+  for(var i=days.length-1;i>=0;i--){
+    var d=new Date(days[i].date+'T00:00:00'),cd=new Date(checkDate);cd.setHours(0,0,0,0);
+    if(d.getTime()===cd.getTime()){streak2++;checkDate.setDate(checkDate.getDate()-1)}else if(d<cd)break;
   }
-  // Simpler: check from today backwards
-  let streak2 = 0;
-  let checkDate = new Date();
-  for (let i = days.length-1; i >= 0; i--) {
-    const d = new Date(days[i].date + 'T00:00:00');
-    const cd = new Date(checkDate);
-    cd.setHours(0,0,0,0);
-    if (d.getTime() === cd.getTime()) {
-      streak2++;
-      checkDate.setDate(checkDate.getDate()-1);
-    } else if (d < cd) { break; }
-  }
-
-  // Exercise streak
-  let exStreak = 0;
-  let exTotal = 0;
-  for (const day of days) {
-    if (day.exDone) { exTotal++; exStreak++; }
-    else { exStreak = 0; }
-  }
-
-  // Diet perfect streak
-  let dietPerfectStreak = 0;
-  for (let i = days.length-1; i >= 0; i--) {
-    const day = days[i];
-    const allDone = day.dietWater && day.dietNoSnack && day.dietHalfRice && day.dietVeggie && day.dietProtein && day.dietNoLate;
-    if (allDone) dietPerfectStreak++;
-    else break;
-  }
-
-  // English streak
-  let engStreak = 0;
-  let engTotal = 0;
-  for (const day of days) {
-    if (day.engDuolingo) { engTotal++; engStreak++; }
-    else { engStreak = 0; }
-  }
-
-  // Study total
-  let studyTotal = 0;
-  for (const day of days) { if (day.studyDone) studyTotal++; }
-
-  // No sugar streak
-  let noSugarStreak = 0;
-  for (let i = days.length-1; i >= 0; i--) {
-    if (!days[i].dietPenalty || !days[i].dietPenalty.includes('含糖')) noSugarStreak++;
-    else break;
-  }
-
-  // Min weight
-  let minW = Infinity;
-  for (const day of days) { if (day.weight && day.weight < minW) minW = day.weight; }
-
-  // Best week loss
-  let bestWL = 0;
-  for (let i = 0; i < days.length; i++) {
-    if (i >= 6) {
-      const w0 = days[i-6].weight;
-      const w1 = days[i].weight;
-      if (w0 && w1 && (w0-w1) > bestWL) bestWL = w0-w1;
-    }
-  }
-
-  // Weight down weeks (consecutive)
-  let wdw = 0;
-  if (days.length >= 7) {
-    const weeks = [];
-    for (let i = 6; i < days.length; i+=7) {
-      weeks.push({ start: days[i-6], end: days[i] });
-    }
-    for (let i = weeks.length-1; i >= 0; i--) {
-      if (weeks[i].end.weight && weeks[i].start.weight && weeks[i].end.weight < weeks[i].start.weight) wdw++;
-      else break;
-    }
-  }
-
-  return {
-    totalDays, streak: streak2, totalXP,
-    exStreak, exTotalDays: exTotal,
-    dietPerfectStreak,
-    engStreak, engTotalDays: engTotal,
-    studyTotalDays: studyTotal,
-    noSugarStreak,
-    minWeight: minW===Infinity ? 81.20 : minW,
-    bestWeekLoss: bestWL,
-    weightDownWeeks: wdw,
-    hasStrength: days.some(d=>d.exDetail && (d.exDetail.includes('力量')||d.exDetail.includes('深蹲')||d.exDetail.includes('俯卧撑')||d.exDetail.includes('哑铃'))),
+  var exStreak=0,exTotal=0;
+  for(var i=0;i<days.length;i++){if(days[i].exDone){exTotal++;exStreak++}else exStreak=0}
+  var dietPerfectStreak=0;
+  for(var i=days.length-1;i>=0;i--){var day=days[i];if(day.dietWater&&day.dietNoSnack&&day.dietHalfRice&&day.dietVeggie&&day.dietProtein&&day.dietNoLate)dietPerfectStreak++;else break}
+  var engStreak=0,engTotal=0;
+  for(var i=0;i<days.length;i++){if(days[i].engDuolingo){engTotal++;engStreak++}else engStreak=0}
+  var studyTotal=0;for(var i=0;i<days.length;i++){if(days[i].studyDone)studyTotal++}
+  var noSugarStreak=0;
+  for(var i=days.length-1;i>=0;i--){if(!days[i].dietPenalty||days[i].dietPenalty.indexOf('含糖')<0)noSugarStreak++;else break}
+  var minW=Infinity;for(var i=0;i<days.length;i++){if(days[i].weight&&days[i].weight<minW)minW=days[i].weight}
+  var bestWL=0;
+  for(var i=0;i<days.length;i++){if(i>=6){var w0=days[i-6].weight,w1=days[i].weight;if(w0&&w1&&(w0-w1)>bestWL)bestWL=w0-w1}}
+  var wdw=0;
+  if(days.length>=7){var weeks=[];for(var i=6;i<days.length;i+=7)weeks.push({start:days[i-6],end:days[i]});for(var i=weeks.length-1;i>=0;i--){if(weeks[i].end.weight&&weeks[i].start.weight&&weeks[i].end.weight<weeks[i].start.weight)wdw++;else break}}
+  return{
+    totalDays:days.length,streak:streak2,totalXP:DATA.totalXP,
+    exStreak:exStreak,exTotalDays:exTotal,dietPerfectStreak:dietPerfectStreak,
+    engStreak:engStreak,engTotalDays:engTotal,studyTotalDays:studyTotal,
+    noSugarStreak:noSugarStreak,minWeight:minW===Infinity?81.20:minW,
+    bestWeekLoss:bestWL,weightDownWeeks:wdw,
+    hasStrength:days.some(function(d){return d.exDetail&&(d.exDetail.indexOf('力量')>=0||d.exDetail.indexOf('深蹲')>=0||d.exDetail.indexOf('俯卧撑')>=0||d.exDetail.indexOf('哑铃')>=0)})
   };
 }
 
-function checkNewAchievements() {
-  const derived = computeDerived();
-  const newUnlocks = [];
-  // Check regular achievements
-  for (var i = 0; i < ALL_ACHIEVEMENTS.length; i++) {
-    var ach = ALL_ACHIEVEMENTS[i];
-    if (DATA.unlockedAch.indexOf(ach.id) >= 0) continue;
-    try {
-      if (ach.check(derived)) {
-        DATA.unlockedAch.push(ach.id);
-        newUnlocks.push(ach);
-      }
-    } catch(e) {}
-  }
-  // Check hidden achievements
-  var hiddenList = getHiddenAchievements();
-  for (var i = 0; i < hiddenList.length; i++) {
-    var hach = hiddenList[i];
-    if (DATA.unlockedAch.indexOf(hach.id) >= 0) continue;
-    try {
-      if (checkHidden(hach, derived, DATA)) {
-        DATA.unlockedAch.push(hach.id);
-        newUnlocks.push(hach);
-      }
-    } catch(e) {}
-  }
-  if (newUnlocks.length > 0) saveData();
+function checkNewAchievements(){
+  var derived=computeDerived(),newUnlocks=[];
+  for(var i=0;i<ALL_ACHIEVEMENTS.length;i++){var ach=ALL_ACHIEVEMENTS[i];if(DATA.unlockedAch.indexOf(ach.id)>=0)continue;try{if(ach.check(derived)){DATA.unlockedAch.push(ach.id);newUnlocks.push(ach)}}catch(e){}}
+  var hiddenList=getHiddenAchievements();
+  for(var i=0;i<hiddenList.length;i++){var hach=hiddenList[i];if(DATA.unlockedAch.indexOf(hach.id)>=0)continue;try{if(checkHidden(hach,derived,DATA)){DATA.unlockedAch.push(hach.id);newUnlocks.push(hach)}}catch(e){}}
+  if(newUnlocks.length>0)saveData();
   return newUnlocks;
 }
 
-function submitDay() {
-  const today = new Date().toISOString().slice(0,10);
+// Checkbox logic
+var checkStates={};
+function toggleCheck(id){checkStates[id]=!checkStates[id];var cb=document.getElementById('cb-'+id);if(cb){if(checkStates[id])cb.classList.add('on');else cb.classList.remove('on')}}
 
-  // Check if already submitted today
-  if (DATA.days.length > 0 && DATA.days[DATA.days.length-1].date === today) {
-    showToast('⚠️ 今天已经汇报过了！');
-    return;
-  }
-
-  const day = {
-    date: today,
-    submittedAt: new Date().toISOString(),
-    // Diet
-    dietWater: checkStates['diet_water']||false,
-    dietNoSnack: checkStates['diet_nosnack']||false,
-    dietHalfRice: checkStates['diet_halfrice']||false,
-    dietVeggie: checkStates['diet_veggie']||false,
-    dietProtein: checkStates['diet_protein']||false,
-    dietNoLate: checkStates['diet_nolate']||false,
-    weight: parseFloat(document.getElementById('weightInput').value) || null,
-    dietNote: document.getElementById('dietNote').value.trim(),
-    dietPenalty: document.getElementById('dietPenalty').value.trim(),
-    // Exercise
-    exDone: checkStates['ex_done']||false,
-    exDetail: document.getElementById('exDetail').value.trim(),
-    // Study
-    studyDone: checkStates['study_done']||false,
-    studyDetail: document.getElementById('studyDetail').value.trim(),
-    // English
-    engDuolingo: checkStates['eng_duolingo']||false,
-    duoStreak: parseInt(document.getElementById('duoStreak').value) || null,
-    engExtra: document.getElementById('engExtra').value.trim(),
-    // Note
-    dailyNote: document.getElementById('dailyNote').value.trim(),
+// ======== SUBMIT ========
+function submitDay(){
+  var today=new Date().toISOString().slice(0,10);
+  if(DATA.days.length>0&&DATA.days[DATA.days.length-1].date===today){showToast('⚠️ 今天已汇报');return}
+  var day={
+    date:today,submittedAt:new Date().toISOString(),
+    dietWater:checkStates['diet_water']||false,dietNoSnack:checkStates['diet_nosnack']||false,
+    dietHalfRice:checkStates['diet_halfrice']||false,dietVeggie:checkStates['diet_veggie']||false,
+    dietProtein:checkStates['diet_protein']||false,dietNoLate:checkStates['diet_nolate']||false,
+    weight:parseFloat(document.getElementById('weightInput').value)||null,
+    dietNote:document.getElementById('dietNote').value.trim(),
+    dietPenalty:document.getElementById('dietPenalty').value.trim(),
+    exDone:checkStates['ex_done']||false,exDetail:document.getElementById('exDetail').value.trim(),
+    studyDone:checkStates['study_done']||false,studyDetail:document.getElementById('studyDetail').value.trim(),
+    engDuolingo:checkStates['eng_duolingo']||false,duoStreak:parseInt(document.getElementById('duoStreak').value)||null,
+    engExtra:document.getElementById('engExtra').value.trim(),
+    dailyNote:document.getElementById('dailyNote').value.trim()
   };
-
-  // Calculate XP
-  let dayXP = 0;
-  if (day.dietWater) dayXP += 10;
-  if (day.dietNoSnack) dayXP += 15;
-  if (day.dietHalfRice) dayXP += 20;
-  if (day.dietVeggie) dayXP += 10;
-  if (day.dietProtein) dayXP += 10;
-  if (day.dietNoLate) dayXP += 15;
-  if (day.exDone) dayXP += 10;
-  if (day.studyDone) dayXP += 15;
-  if (day.engDuolingo) dayXP += 20;
-  // Penalties
-  if (day.dietPenalty) {
-    if (day.dietPenalty.includes('含糖')) dayXP -= 30;
-    if (day.dietPenalty.includes('炸鸡')||day.dietPenalty.includes('烧烤')||day.dietPenalty.includes('火锅')) dayXP -= 20;
-    if (day.dietPenalty.includes('暴食')) dayXP -= 40;
-  }
-  day.xp = dayXP;
-
-  DATA.days.push(day);
-  DATA.totalXP = (DATA.totalXP||0) + dayXP;
-
-  // Attribute XP
-  DATA.physXP = (DATA.physXP||0) + (day.dietWater?10:0)+(day.dietNoSnack?15:0)+(day.dietHalfRice?20:0)+(day.dietVeggie?10:0)+(day.dietProtein?10:0)+(day.dietNoLate?15:0)+(day.exDone?10:0);
-  DATA.habitXP = (DATA.habitXP||0) + 1; // streak day
-  DATA.knowXP = (DATA.knowXP||0) + (day.studyDone?15:0);
-  DATA.speakXP = (DATA.speakXP||0) + (day.engDuolingo?20:0);
-
+  var xp=0;
+  if(day.dietWater)xp+=10;if(day.dietNoSnack)xp+=15;if(day.dietHalfRice)xp+=20;
+  if(day.dietVeggie)xp+=10;if(day.dietProtein)xp+=10;if(day.dietNoLate)xp+=15;
+  if(day.exDone)xp+=10;if(day.studyDone)xp+=15;if(day.engDuolingo)xp+=20;
+  if(day.dietPenalty){if(day.dietPenalty.indexOf('含糖')>=0)xp-=30;if(day.dietPenalty.indexOf('炸鸡')>=0||day.dietPenalty.indexOf('烧烤')>=0||day.dietPenalty.indexOf('火锅')>=0)xp-=20;if(day.dietPenalty.indexOf('暴食')>=0)xp-=40}
+  day.xp=xp;
+  DATA.days.push(day);DATA.totalXP=(DATA.totalXP||0)+xp;
+  DATA.physXP=(DATA.physXP||0)+(day.dietWater?10:0)+(day.dietNoSnack?15:0)+(day.dietHalfRice?20:0)+(day.dietVeggie?10:0)+(day.dietProtein?10:0)+(day.dietNoLate?15:0)+(day.exDone?10:0);
+  DATA.habitXP=(DATA.habitXP||0)+1;
+  DATA.knowXP=(DATA.knowXP||0)+(day.studyDone?15:0);
+  DATA.speakXP=(DATA.speakXP||0)+(day.engDuolingo?20:0);
   saveData();
-  const newAch = checkNewAchievements();
-
-  // Reset form
+  var newAch=checkNewAchievements();
   resetForm();
-  showToast(`⚔️ 战报提交！+${dayXP} XP`);
-
-  // Show achievement popups
-  if (newAch.length > 0) {
-    setTimeout(() => showAchModal(newAch[0], 0, newAch), 500);
-  }
-
-  renderAll();
+  showToast('⚔️ 战报提交！+'+xp+' XP');
+  if(newAch.length>0){setTimeout(function(){showAchModal(newAch[0],0,newAch)},500)}
+  refreshAll();
 }
 
-function resetForm() {
-  for (const k of Object.keys(checkStates)) checkStates[k] = false;
-  document.querySelectorAll('.box').forEach(b => b.classList.remove('checked'));
-  document.getElementById('weightInput').value = '';
-  document.getElementById('dietNote').value = '';
-  document.getElementById('dietPenalty').value = '';
-  document.getElementById('exDetail').value = '';
-  document.getElementById('studyDetail').value = '';
-  document.getElementById('duoStreak').value = '';
-  document.getElementById('engExtra').value = '';
-  document.getElementById('dailyNote').value = '';
+function resetForm(){
+  for(var k in checkStates)checkStates[k]=false;
+  document.querySelectorAll('.cb').forEach(function(el){el.classList.remove('on')});
+  document.getElementById('weightInput').value='';
+  document.getElementById('dietNote').value='';
+  document.getElementById('dietPenalty').value='';
+  document.getElementById('exDetail').value='';
+  document.getElementById('studyDetail').value='';
+  document.getElementById('duoStreak').value='';
+  document.getElementById('engExtra').value='';
+  document.getElementById('dailyNote').value='';
 }
 
-// ======== CHECKBOX LOGIC ========
-const checkStates = {};
-function toggleCheck(id) {
-  checkStates[id] = !checkStates[id];
-  const box = document.getElementById('box-'+id);
-  if (box) {
-    if (checkStates[id]) box.classList.add('checked');
-    else box.classList.remove('checked');
-  }
+// ======== NAVIGATION ========
+var currentAchSubtap='unlocked';
+function switchPage(name){
+  document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active')});
+  document.querySelectorAll('.nv').forEach(function(n){n.classList.remove('active')});
+  document.getElementById('page-'+name).classList.add('active');
+  document.querySelector('.nv[data-tab="'+name+'"]').classList.add('active');
+  if(name==='achieve')renderAchievements();
+  if(name==='history')renderCalendar();
+  if(name==='profile')renderProfile();
+  if(name==='home')refreshAll();
 }
 
-// ======== TABS ========
-function switchTab(name) {
-  document.querySelectorAll('.form-section').forEach(s=>s.classList.remove('active'));
-  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-  document.getElementById('tab-'+name).classList.add('active');
-  document.querySelectorAll('.tab').forEach(t=>{ if(t.textContent.includes({checkin:'打卡',achieve:'成就',stats:'数据',history:'记录'}[name])) t.classList.add('active'); });
-
-  if (name === 'achieve') renderAchievements();
-  if (name === 'stats') renderStats();
-  if (name === 'history') renderHistory();
+function switchAchSubtap(sub){
+  currentAchSubtap=sub;
+  document.querySelectorAll('.st').forEach(function(s){s.classList.remove('ac')});
+  document.querySelector('.st[onclick*="'+sub+'"]').classList.add('ac');
+  renderAchievements();
 }
 
 // ======== RENDER ========
-function renderAll() {
-  const d = computeDerived();
-  document.getElementById('totalXP').textContent = d.totalXP;
-  document.getElementById('streakDays').textContent = d.streak;
-  document.getElementById('totalDays').textContent = d.totalDays;
+function refreshAll(){
+  var d=computeDerived();
+  document.getElementById('hxp').textContent=d.totalXP;
+}
 
+function renderAchievements(){
+  var d=computeDerived();
+  document.getElementById('achCount').textContent=DATA.unlockedAch.length;
+  var grid=document.getElementById('achGrid');
+  var html='';
+
+  if(currentAchSubtap==='unlocked'){
+    // Show unlocked achievements (regular + hidden)
+    var allAch=[];
+    for(var i=0;i<ALL_ACHIEVEMENTS.length;i++){if(DATA.unlockedAch.indexOf(ALL_ACHIEVEMENTS[i].id)>=0)allAch.push(ALL_ACHIEVEMENTS[i])}
+    var hiddenList=getHiddenAchievements();
+    for(var i=0;i<hiddenList.length;i++){if(DATA.unlockedAch.indexOf(hiddenList[i].id)>=0)allAch.push(hiddenList[i])}
+    allAch.sort(function(a,b){return DATA.unlockedAch.indexOf(a.id)-DATA.unlockedAch.indexOf(b.id)});
+    if(allAch.length===0){html='<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--muted)">还没有解锁任何成就<br>开始打卡吧 🎮</div>'}
+    for(var i=0;i<allAch.length;i++){
+      var ach=allAch[i];
+      html+='<div class="ach-card unlocked" style="'+(ach.hidden?'border-color:rgba(255,59,48,.3)':'')+'">'+
+        '<div class="icon">'+ach.icon+'</div>'+
+        '<div class="name">'+ach.name+(ach.hidden?' <span style="color:#FF3B30;font-size:9px">隐藏</span>':'')+'</div>'+
+        '<div class="rare rarity-'+(ach.rarity==='铜'?'bronze':ach.rarity==='银'?'silver':ach.rarity==='金'?'gold':ach.rarity==='铂金'?'platinum':'legend')+'">'+'⭐'.repeat(ach.rarity==='铜'?1:ach.rarity==='银'?2:ach.rarity==='金'?3:ach.rarity==='铂金'?4:5)+' '+ach.rarity+'</div>'+
+        '<div class="cond">'+ach.cond+'</div>'+
+        '</div>';
+    }
+  } else {
+    // Locked: only regular achievements (no hidden)
+    for(var i=0;i<ALL_ACHIEVEMENTS.length;i++){
+      var ach=ALL_ACHIEVEMENTS[i];
+      if(DATA.unlockedAch.indexOf(ach.id)>=0)continue;
+      var prog=0;
+      if(ach.id.indexOf('_3day')>=0)prog=Math.min(100,(d.dietPerfectStreak||d.exStreak||0)/3*100);
+      else if(ach.id.indexOf('_7day')>=0)prog=Math.min(100,(d.dietPerfectStreak||d.exStreak||d.engStreak||0)/7*100);
+      else if(ach.id.indexOf('_14day')>=0||ach.id.indexOf('nosugar14')>=0)prog=Math.min(100,(d.exStreak||d.noSugarStreak||0)/14*100);
+      else if(ach.id.indexOf('_30day')>=0||ach.id.indexOf('nosugar30')>=0)prog=Math.min(100,(d.exStreak||d.engStreak||d.noSugarStreak||0)/30*100);
+      else if(ach.id.indexOf('_10')>=0)prog=Math.min(100,d.studyTotalDays/10*100);
+      else if(ach.id.indexOf('_50')>=0)prog=Math.min(100,d.studyTotalDays/50*100);
+      else if(ach.id.indexOf('_100')>=0)prog=Math.min(100,(d.exTotalDays||d.engTotalDays||0)/100*100);
+      else if(ach.id==='diet_80')prog=Math.max(0,Math.min(100,(81.2-d.minWeight)/(81.2-79.9)*100));
+      html+='<div class="ach-card locked">'+
+        '<div class="icon">'+ach.icon+'</div><div class="name">'+ach.name+'</div>'+
+        '<div class="rare rarity-'+(ach.rarity==='铜'?'bronze':ach.rarity==='银'?'silver':ach.rarity==='金'?'gold':ach.rarity==='铂金'?'platinum':'legend')+'">'+'⭐'.repeat(ach.rarity==='铜'?1:ach.rarity==='银'?2:ach.rarity==='金'?3:ach.rarity==='铂金'?4:5)+' '+ach.rarity+'</div>'+
+        '<div class="cond">'+ach.cond+'</div>'+
+        '<div class="prog"><div class="bar" style="width:'+prog+'%"></div></div>'+
+        '</div>';
+    }
+  }
+  grid.innerHTML=html;
+}
+
+// ======== CALENDAR ========
+var calYear,calMonth;
+function calShift(offset){
+  if(offset){calMonth+=offset;if(calMonth>12){calMonth=1;calYear++}if(calMonth<1){calMonth=12;calYear--}}
+  renderCalendar();
+}
+
+function renderCalendar(){
+  if(!calYear){var now=new Date();calYear=now.getFullYear();calMonth=now.getMonth()+1}
+  document.getElementById('calMonth').textContent=calYear+'年'+calMonth+'月';
+  var firstDay=new Date(calYear,calMonth-1,1).getDay();
+  var daysInMonth=new Date(calYear,calMonth,0).getDate();
+  var grid=document.getElementById('calGrid');
+  var today=new Date().toISOString().slice(0,10);
+  var dayData={};
+  for(var i=0;i<DATA.days.length;i++){dayData[DATA.days[i].date]=DATA.days[i]}
+
+  var html='<div class="dow">日</div><div class="dow">一</div><div class="dow">二</div><div class="dow">三</div><div class="dow">四</div><div class="dow">五</div><div class="dow">六</div>';
+  // Previous month padding
+  var prevDays=new Date(calYear,calMonth-1,0).getDate();
+  for(var i=firstDay-1;i>=0;i--){
+    var d=prevDays-i,pm=calMonth-1,py=calYear;if(pm<1){pm=12;py--}
+    var ds=py+'-'+String(pm).padStart(2,'0')+'-'+String(d).padStart(2,'0');
+    html+='<div class="day other">'+d+'</div>';
+  }
+  // Current month
+  for(var d=1;d<=daysInMonth;d++){
+    var ds=calYear+'-'+String(calMonth).padStart(2,'0')+'-'+String(d).padStart(2,'0');
+    var dd=dayData[ds],cls='day';
+    if(ds===today)cls+=' today';
+    html+='<div class="'+cls+'" onclick="showDayDetail(\''+ds+'\')">'+d;
+    if(dd){
+      var hasAll=dd.dietWater&&dd.dietNoSnack&&dd.dietHalfRice&&dd.dietVeggie&&dd.dietProtein&&dd.dietNoLate&&dd.exDone&&dd.studyDone&&dd.engDuolingo;
+      var hasAny=dd.dietWater||dd.dietNoSnack||dd.dietHalfRice||dd.dietVeggie||dd.dietProtein||dd.dietNoLate||dd.exDone||dd.studyDone||dd.engDuolingo;
+      html+='<div class="dot'+(hasAll?'':' part')+'"></div>';
+    }
+    html+='</div>';
+  }
+  // Next month padding
+  var remaining=42-(firstDay+daysInMonth);
+  for(var d=1;d<=remaining;d++){html+='<div class="day other">'+d+'</div>'}
+  grid.innerHTML=html;
+  document.getElementById('calDetail').classList.remove('show');
+}
+
+function showDayDetail(ds){
+  var dd=null;
+  for(var i=DATA.days.length-1;i>=0;i--){if(DATA.days[i].date===ds){dd=DATA.days[i];break}}
+  var detail=document.getElementById('calDetail');
+  if(!dd){detail.innerHTML='<div class="card" style="text-align:center;color:var(--muted)">'+ds+' 未打卡</div>';detail.classList.add('show');return}
+  var badges=[];
+  if(dd.dietWater)badges.push('🥤水');if(dd.dietNoSnack)badges.push('🚫零');
+  if(dd.dietHalfRice)badges.push('🍚半');if(dd.dietVeggie)badges.push('🥬蔬');
+  if(dd.dietProtein)badges.push('🍗蛋');if(dd.dietNoLate)badges.push('🌙禁');
+  if(dd.exDone)badges.push('⚡动');if(dd.studyDone)badges.push('📖学');
+  if(dd.engDuolingo)badges.push('🟢英');
+  detail.innerHTML='<div class="card"><h3>📅 '+ds+' · +'+dd.xp+' XP</h3>'+
+    '<div style="margin-bottom:6px">'+badges.join(' ')+'</div>'+
+    (dd.weight?'<div style="font-size:13px">⚖️ '+dd.weight+' kg</div>':'')+
+    (dd.dietNote?'<div style="font-size:13px;color:var(--muted);margin-top:4px">🍽️ '+dd.dietNote+'</div>':'')+
+    (dd.dietPenalty?'<div style="font-size:13px;color:var(--red);margin-top:4px">⚠️ '+dd.dietPenalty+'</div>':'')+
+    (dd.exDetail?'<div style="font-size:13px;color:var(--muted);margin-top:4px">🏃 '+dd.exDetail+'</div>':'')+
+    (dd.studyDetail?'<div style="font-size:13px;color:var(--muted);margin-top:4px">📖 '+dd.studyDetail+'</div>':'')+
+    (dd.dailyNote?'<div style="font-size:13px;color:var(--muted);margin-top:4px">💭 '+dd.dailyNote+'</div>':'')+
+    '</div>';
+  detail.classList.add('show');
+}
+
+// ======== PROFILE ========
+function renderProfile(){
+  var d=computeDerived();
+  document.getElementById('pTotalDays').textContent=d.totalDays;
+  document.getElementById('pStreak').textContent=d.streak;
+  var lastW=null;for(var i=DATA.days.length-1;i>=0;i--){if(DATA.days[i].weight){lastW=DATA.days[i].weight;break}}
+  document.getElementById('pWeight').textContent=lastW?lastW.toFixed(2):'81.20';
+  var firstW=null;for(var i=0;i<DATA.days.length;i++){if(DATA.days[i].weight){firstW=DATA.days[i].weight;break}}
+  if(firstW&&lastW){var diff=(lastW-firstW).toFixed(1);document.getElementById('pWeightChg').textContent=(diff>0?'+':'')+diff+' kg'}
+  else document.getElementById('pWeightChg').textContent='—';
   // Title
-  let title = '🌱 萌芽行者';
-  for (const t of TITLES) {
-    if (d.totalDays >= t.days) title = t.name;
-  }
-  document.getElementById('currentTitle').textContent = title;
-}
-
-function renderAchievements() {
-  const d = computeDerived();
-  const grid = document.getElementById('achGrid');
-  var totalPossible = ALL_ACHIEVEMENTS.length;
-  var hiddenUnlocked = 0;
-  for (var i = 0; i < DATA.unlockedAch.length; i++) {
-    if (DATA.unlockedAch[i].indexOf('h_') === 0) hiddenUnlocked++;
-  }
-  document.getElementById('achUnlocked').textContent = DATA.unlockedAch.length;
-
-  var html = '';
-  // Render regular achievements
-  for (var i = 0; i < ALL_ACHIEVEMENTS.length; i++) {
-    var ach = ALL_ACHIEVEMENTS[i];
-    var unlocked = DATA.unlockedAch.indexOf(ach.id) >= 0;
-    var progress = 0;
-    if (!unlocked) {
-      if (ach.id.indexOf('3day')>=0||ach.id.indexOf('_3day')>=0) progress = Math.min(100, (d.dietPerfectStreak||d.exStreak||0)/3*100);
-      else if (ach.id.indexOf('7day')>=0||ach.id.indexOf('_7day')>=0) progress = Math.min(100, (d.dietPerfectStreak||d.exStreak||d.engStreak||0)/7*100);
-      else if (ach.id.indexOf('14day')>=0||ach.id.indexOf('_14day')>=0) progress = Math.min(100, (d.exStreak||d.noSugarStreak||0)/14*100);
-      else if (ach.id.indexOf('30day')>=0||ach.id.indexOf('_30day')>=0) progress = Math.min(100, (d.exStreak||d.engStreak||d.noSugarStreak||0)/30*100);
-    } else { progress = 100; }
-
-    html += '<div class="ach-card '+(unlocked?'unlocked':'locked')+'">'+
-      '<div class="icon">'+ach.icon+'</div>'+
-      '<div class="name">'+ach.name+'</div>'+
-      '<div class="rarity rarity-'+(ach.rarity==='铜'?'bronze':ach.rarity==='银'?'silver':ach.rarity==='金'?'gold':ach.rarity==='铂金'?'platinum':'legend')+'">'+('⭐'.repeat(ach.rarity==='铜'?1:ach.rarity==='银'?2:ach.rarity==='金'?3:ach.rarity==='铂金'?4:5))+' '+ach.rarity+'</div>'+
-      '<div class="cond">'+ach.cond+'</div>'+
-      '<div class="progress"><div class="bar" style="width:'+progress+'%"></div></div>'+
-      '</div>';
-  }
-
-  // Render hidden achievements ONLY if unlocked
-  var hiddenList = getHiddenAchievements();
-  for (var i = 0; i < hiddenList.length; i++) {
-    var hach = hiddenList[i];
-    if (DATA.unlockedAch.indexOf(hach.id) < 0) continue; // Skip locked hidden
-
-    html += '<div class="ach-card unlocked" style="border-color:rgba(255,100,100,.4)">'+
-      '<div class="icon">'+hach.icon+'</div>'+
-      '<div class="name">'+hach.name+' <span style="color:#e05555;font-size:9px">隐藏</span></div>'+
-      '<div class="rarity rarity-'+(hach.rarity==='铜'?'bronze':hach.rarity==='银'?'silver':hach.rarity==='金'?'gold':hach.rarity==='铂金'?'platinum':'legend')+'">'+('⭐'.repeat(hach.rarity==='铜'?1:hach.rarity==='银'?2:hach.rarity==='金'?3:hach.rarity==='铂金'?4:5))+' '+hach.rarity+'</div>'+
-      '<div class="cond">'+hach.cond+'</div>'+
-      '<div class="progress"><div class="bar" style="width:100%"></div></div>'+
-      '</div>';
-  }
-
-  grid.innerHTML = html;
-}
-
-function renderStats() {
-  const d = computeDerived();
-  document.getElementById('statTotalDays').textContent = d.totalDays;
-  document.getElementById('statStreak').textContent = d.streak;
-
-  const lastWeight = DATA.days.filter(d=>d.weight).pop();
-  document.getElementById('statWeight').textContent = lastWeight ? lastWeight.weight.toFixed(2) : '—';
-
-  // Weight change from first
-  const firstW = DATA.days.find(d=>d.weight);
-  if (firstW && lastWeight) {
-    const diff = (lastWeight.weight - firstW.weight).toFixed(2);
-    document.getElementById('statWeightChange').textContent = (diff>0?'+':'')+diff+' kg';
-  }
-
-  // Attribute bars
-  const phys = Math.min(100, Math.floor((DATA.physXP||0)/10));
-  const habit = Math.min(100, Math.floor((DATA.habitXP||0)));
-  const know = Math.min(100, Math.floor((DATA.knowXP||0)/10));
-  const speak = Math.min(100, Math.floor((DATA.speakXP||0)/10));
-
-  document.getElementById('fill-phys').style.width = phys+'%';
-  document.getElementById('num-phys').textContent = phys+'/100';
-  document.getElementById('fill-habit').style.width = habit+'%';
-  document.getElementById('num-habit').textContent = habit+'/100';
-  document.getElementById('fill-know').style.width = know+'%';
-  document.getElementById('num-know').textContent = know+'/100';
-  document.getElementById('fill-speak').style.width = speak+'%';
-  document.getElementById('num-speak').textContent = speak+'/100';
-
-  // Weight log
-  const weights = DATA.days.filter(d=>d.weight).slice(-14);
-  let whtml = '';
-  for (const w of weights.reverse()) {
-    const prev = DATA.days[DATA.days.indexOf(w)-1];
-    const chg = prev && prev.weight ? (w.weight - prev.weight).toFixed(2) : null;
-    whtml += `<div class="weight-entry"><span>📅 ${w.date.slice(5)}</span><span>${w.weight.toFixed(2)} kg</span>${chg ? `<span class="${chg>0?'weight-change-up':'weight-change-down'}">${chg>0?'+':''}${chg}</span>` : ''}</div>`;
-  }
-  document.getElementById('weightLog').innerHTML = whtml || '<div style="color:var(--muted);font-size:13px">暂无体重记录</div>';
-
+  var title='🌱 萌芽行者';
+  for(var i=0;i<TITLES.length;i++){if(d.totalDays>=TITLES[i].days)title=TITLES[i].name}
+  document.getElementById('profTitle').textContent=title;
+  // Attributes
+  var phys=Math.min(100,Math.floor((DATA.physXP||0)/10));
+  var habit=Math.min(100,Math.floor((DATA.habitXP||0)));
+  var know=Math.min(100,Math.floor((DATA.knowXP||0)/10));
+  var speak=Math.min(100,Math.floor((DATA.speakXP||0)/10));
+  document.getElementById('af-phys').style.width=phys+'%';document.getElementById('av-phys').textContent=phys;
+  document.getElementById('af-habit').style.width=habit+'%';document.getElementById('av-habit').textContent=habit;
+  document.getElementById('af-know').style.width=know+'%';document.getElementById('av-know').textContent=know;
+  document.getElementById('af-speak').style.width=speak+'%';document.getElementById('av-speak').textContent=speak;
   // Title progress
-  let thtml = '';
-  for (const t of TITLES) {
-    const pct = Math.min(100, Math.floor(d.totalDays/t.days*100));
-    thtml += `<div style="margin-bottom:8px"><div style="display:flex;justify-content:space-between;font-size:13px"><span>${t.name}</span><span style="color:var(--muted)">${d.totalDays}/${t.days}</span></div><div class="progress" style="height:6px;margin-top:4px"><div class="bar" style="width:${pct}%"></div></div></div>`;
-  }
-  document.getElementById('titleProgress').innerHTML = thtml;
+  var thtml='';
+  for(var i=0;i<TITLES.length;i++){var pct=Math.min(100,Math.floor(d.totalDays/TITLES[i].days*100));thtml+='<div style="margin-bottom:6px"><div style="display:flex;justify-content:space-between;font-size:12px"><span>'+TITLES[i].name+'</span><span style="color:var(--muted)">'+d.totalDays+'/'+TITLES[i].days+'</span></div><div class="prog" style="height:5px;margin-top:3px"><div class="bar" style="width:'+pct+'%"></div></div></div>'}
+  document.getElementById('titleProg').innerHTML=thtml;
 }
 
-function renderHistory() {
-  const days = [...DATA.days].reverse().slice(0, 30);
-  let html = '';
-  for (const day of days) {
-    const lines = [];
-    if (day.dietWater) lines.push('🥤水');
-    if (day.dietNoSnack) lines.push('🚫零');
-    if (day.dietHalfRice) lines.push('🍚半');
-    if (day.dietVeggie) lines.push('🥬蔬');
-    if (day.dietProtein) lines.push('🍗蛋');
-    if (day.dietNoLate) lines.push('🌙禁');
-    if (day.exDone) lines.push('⚡动');
-    if (day.studyDone) lines.push('📖学');
-    if (day.engDuolingo) lines.push('🟢英');
-    const badges = lines.join(' ');
-    html += `<div class="day-log">
-      <div class="day-header">📅 ${day.date} · +${day.xp||0} XP</div>
-      <div class="day-row">${badges || '💤 未打卡'}</div>
-      ${day.dailyNote ? `<div class="day-row">💭 ${day.dailyNote}</div>` : ''}
-      ${day.weight ? `<div class="day-row">⚖️ ${day.weight} kg</div>` : ''}
-    </div>`;
-  }
-  document.getElementById('historyList').innerHTML = html || '<div style="color:var(--muted);text-align:center;padding:40px">还没有记录，快去打卡吧 🎮</div>';
+// ======== MODAL & TOAST ========
+function showAchModal(ach,idx,arr){
+  document.getElementById('mIcon').textContent=ach.icon;
+  document.getElementById('mName').textContent=ach.name;
+  document.getElementById('mRare').innerHTML='<span class="rarity-'+(ach.rarity==='铜'?'bronze':ach.rarity==='银'?'silver':ach.rarity==='金'?'gold':ach.rarity==='铂金'?'platinum':'legend')+'">'+'⭐'.repeat(ach.rarity==='铜'?1:ach.rarity==='银'?2:ach.rarity==='金'?3:ach.rarity==='铂金'?4:5)+' '+ach.rarity+'</span>';
+  document.getElementById('mCond').textContent=ach.cond;
+  document.getElementById('achModal').classList.add('show');
+  setTimeout(function(){document.getElementById('achModal').classList.remove('show');if(idx+1<arr.length)setTimeout(function(){showAchModal(arr[idx+1],idx+1,arr)},400)},2500);
+}
+function closeModal(){document.getElementById('achModal').classList.remove('show')}
+function showToast(msg){var t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(function(){t.classList.remove('show')},2000)}
+
+// ======== BACKUP ========
+function exportData(){var blob=new Blob([JSON.stringify(DATA,null,2)],{type:'application/json'});var url=URL.createObjectURL(blob);var a=document.createElement('a');a.href=url;a.download='liferpg-'+new Date().toISOString().slice(0,10)+'.json';a.click();showToast('💾 备份已下载')}
+function importData(e){var file=e.target.files[0];if(!file)return;var reader=new FileReader();reader.onload=function(ev){try{var imported=JSON.parse(ev.target.result);if(!imported.days)throw '';DATA=Object.assign(JSON.parse(JSON.stringify(DEFAULT_DATA)),imported);saveData();refreshAll();showToast('📥 已恢复')}catch(err){showToast('❌ 格式错误')}};reader.readAsText(file);e.target.value=''}
+
+// ======== PRE-FILL TODAY ========
+var today2=new Date().toISOString().slice(0,10);
+var todayData=DATA.days.length>0&&DATA.days[DATA.days.length-1].date===today2?DATA.days[DATA.days.length-1]:null;
+if(todayData){
+  checkStates['diet_water']=todayData.dietWater;checkStates['diet_nosnack']=todayData.dietNoSnack;
+  checkStates['diet_halfrice']=todayData.dietHalfRice;checkStates['diet_veggie']=todayData.dietVeggie;
+  checkStates['diet_protein']=todayData.dietProtein;checkStates['diet_nolate']=todayData.dietNoLate;
+  checkStates['ex_done']=todayData.exDone;checkStates['study_done']=todayData.studyDone;
+  checkStates['eng_duolingo']=todayData.engDuolingo;
+  document.getElementById('weightInput').value=todayData.weight||'';
+  document.getElementById('dietNote').value=todayData.dietNote||'';
+  document.getElementById('dietPenalty').value=todayData.dietPenalty||'';
+  document.getElementById('exDetail').value=todayData.exDetail||'';
+  document.getElementById('studyDetail').value=todayData.studyDetail||'';
+  document.getElementById('duoStreak').value=todayData.duoStreak||'';
+  document.getElementById('engExtra').value=todayData.engExtra||'';
+  document.getElementById('dailyNote').value=todayData.dailyNote||'';
+  for(var k in checkStates){var cb=document.getElementById('cb-'+k);if(cb){if(checkStates[k])cb.classList.add('on');else cb.classList.remove('on')}}
 }
 
-// ======== ACHIEVEMENT POPUP ========
-function showAchModal(ach, idx, arr) {
-  document.getElementById('modalIcon').textContent = ach.icon;
-  document.getElementById('modalName').textContent = ach.name;
-  document.getElementById('modalRarity').innerHTML = `<span class="rarity-${ach.rarity==='铜'?'bronze':ach.rarity==='银'?'silver':ach.rarity==='金'?'gold':ach.rarity==='铂金'?'platinum':'legend'}">${'⭐'.repeat(ach.rarity==='铜'?1:ach.rarity==='银'?2:ach.rarity==='金'?3:ach.rarity==='铂金'?4:5)} ${ach.rarity}</span>`;
-  document.getElementById('modalCond').textContent = ach.cond;
-  const modal = document.getElementById('achModal');
-  modal.classList.add('show');
-  // Auto close
-  setTimeout(() => {
-    modal.classList.remove('show');
-    if (idx+1 < arr.length) setTimeout(() => showAchModal(arr[idx+1], idx+1, arr), 400);
-  }, 2500);
-}
-
-function closeModal() {
-  document.getElementById('achModal').classList.remove('show');
-}
-
-// ======== TOAST ========
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2000);
-}
-
-// ======== BACKUP / RESTORE ========
-function exportData() {
-  const blob = new Blob([JSON.stringify(DATA, null, 2)], {type:'application/json'});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = 'liferpg-backup-'+new Date().toISOString().slice(0,10)+'.json';
-  a.click();
-  showToast('💾 备份已下载');
-}
-
-function importData(e) {
-  const file = e.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = function(ev) {
-    try {
-      const imported = JSON.parse(ev.target.result);
-      if (!imported.days || !Array.isArray(imported.days)) throw new Error('格式不对');
-      DATA = { ...JSON.parse(JSON.stringify(DEFAULT_DATA)), ...imported };
-      saveData();
-      renderAll();
-      showToast('📥 数据已恢复！');
-    } catch(err) { showToast('❌ 文件格式错误'); }
-  };
-  reader.readAsText(file);
-  e.target.value = '';
-}
-
-// ======== INIT ========
-renderAll();
-// Pre-fill checkStates from today's data if not yet submitted
-const today = new Date().toISOString().slice(0,10);
-const todayData = DATA.days.length>0 && DATA.days[DATA.days.length-1].date===today ? DATA.days[DATA.days.length-1] : null;
-if (todayData) {
-  for (const k of Object.keys(checkStates)) delete checkStates[k];
-  checkStates['diet_water'] = todayData.dietWater;
-  checkStates['diet_nosnack'] = todayData.dietNoSnack;
-  checkStates['diet_halfrice'] = todayData.dietHalfRice;
-  checkStates['diet_veggie'] = todayData.dietVeggie;
-  checkStates['diet_protein'] = todayData.dietProtein;
-  checkStates['diet_nolate'] = todayData.dietNoLate;
-  checkStates['ex_done'] = todayData.exDone;
-  checkStates['study_done'] = todayData.studyDone;
-  checkStates['eng_duolingo'] = todayData.engDuolingo;
-  document.getElementById('weightInput').value = todayData.weight||'';
-  document.getElementById('dietNote').value = todayData.dietNote||'';
-  document.getElementById('dietPenalty').value = todayData.dietPenalty||'';
-  document.getElementById('exDetail').value = todayData.exDetail||'';
-  document.getElementById('studyDetail').value = todayData.studyDetail||'';
-  document.getElementById('duoStreak').value = todayData.duoStreak||'';
-  document.getElementById('engExtra').value = todayData.engExtra||'';
-  document.getElementById('dailyNote').value = todayData.dailyNote||'';
-  // Update box visuals
-  for (const [k,v] of Object.entries(checkStates)) {
-    const box = document.getElementById('box-'+k);
-    if (box) { if (v) box.classList.add('checked'); else box.classList.remove('checked'); }
-  }
-}
-
-console.log('🎮 人生RPG 已就绪');
-console.log('📊 累计打卡', DATA.days.length, '天');
-console.log('🏆 解锁成就', DATA.unlockedAch.length, '个');
-
-const isStandalone = window.matchMedia('(display-mode: standalone)').matches || navigator.standalone;
-console.log('📱 运行模式:', isStandalone ? '独立App' : '浏览器');
-
-if (navigator.serviceWorker) {
-  navigator.serviceWorker.register('sw.js').then(function(){console.log('SW OK')}).catch(function(){});
-}
-
-if (!isStandalone) {
-  var bannerEl = document.createElement('div');
-  bannerEl.style.cssText = 'position:fixed;bottom:0;left:0;right:0;background:#1a1a2e;border-top:1px solid rgba(232,184,48,.3);padding:12px 16px;z-index:99;display:flex;align-items:center;gap:10px;font-size:13px';
-  bannerEl.innerHTML = '<span style="font-size:24px">📱</span><span style="flex:1">点右上角 ⋮ → <b style="color:#e8b830">安装</b> 或 <b style="color:#e8b830">添加到主屏幕</b><br><span style="color:#7a7a8a;font-size:11px">变成独立App，体验更好</span></span><button onclick="this.parentElement.remove()" style="background:none;border:none;color:#7a7a8a;font-size:18px;cursor:pointer">✕</button>';
-  document.body.appendChild(bannerEl);
-}
+refreshAll();
+console.log('🎮 人生RPG 已就绪 · 隐藏成就已植入');
 </script>
 </body>
 </html>

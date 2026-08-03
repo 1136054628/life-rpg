@@ -1,4 +1,4 @@
-var CACHE_NAME = 'liferpg-v3';
+var CACHE_NAME = 'liferpg-v4';
 var ASSETS = ['/life-rpg/','/life-rpg/index.html','/life-rpg/manifest.json','/life-rpg/icon-192.png','/life-rpg/icon-512.png'];
 
 self.addEventListener('install', function(e) {

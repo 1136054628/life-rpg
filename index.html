@@ -555,8 +555,219 @@ const ALL_ACHIEVEMENTS = [
   { id:'eng_speak7', icon:'🎤', name:'七日开口', rarity:'银', cat:'eng', cond:'连续7天口语练习', check: ()=>false },
   { id:'eng_3min', icon:'💬', name:'自我叙述者', rarity:'金', cat:'eng', cond:'能用英语连续说3分钟', check: ()=>false },
   { id:'eng_native', icon:'🌍', name:'口语觉醒', rarity:'铂金', cat:'eng', cond:'第一次不需要脑中翻译', check: ()=>false },
-  { id:'eng_100', icon:'🏅', name:'百日连胜', rarity:'铂金', cat:'eng', cond:'多邻国累计100天', check: d=>d.engTotalDays>=100 },
+  
 ];
+
+// ═══════════════════════════════════════════
+//  HIDDEN ACHIEVEMENTS (base64 encoded)
+//  These won't appear in DOM until unlocked
+// ═══════════════════════════════════════════
+const HIDDEN_ENCODED = [
+'aF92YWxvcmFudHzwn46ufOeTpue9l+WFsOeJueS8keWBh3zph5F86L+e57utM+Wkqeavj+aXpeS4gOWPpeivneaPkOWIsOS4jeaJk+eTpnxrZXl3b3JkXzNkYXk=',
+'aF9naXJsZnJpZW5kfPCfkpV85oGL54ix6ISR5a6e6ZSkfOmTtnzntK/orqE15qyh5q+P5pel5LiA5Y+l6K+d5o+Q5Yiw5aWz5pyL5Y+L5oiW5aW5fGtleXdvcmRfY291bnQ1',
+'aF9jaGVmfPCfjbN85Lit5Y2O5bCP5b2T5a62fOmHkXzppa7po5/orrDlvZXov57nu6035aSp5Ye6546w6Ieq5bex5YGafGNvb2tfN2RheQ==',
+'aF9yYWJiaXR88J+QsHzlhZTlrZDmqKHlvI986ZO2fOi/nue7rTPlpKnmmZrppJDlj6rlkIPpu4Tnk5znlarojITnrIvovbvpo598cmFiYml0XzNkYXk=',
+'aF9sYXRlbmlnaHR88J+MmXzmt7HlpJzmiZPljaF86ZOcfOWcqDIzOjAw5LmL5ZCO5o+Q5Lqk5b2T5pel5omT5Y2hfHRpbWVfbGF0ZQ==',
+'aF9lYXJseWJpcmR88J+MhXzpu47mmI7miZPljaF86ZO2fOWcqOaXqeS4ijY6MDAtNzozMOaPkOS6pOaJk+WNoXx0aW1lX2Vhcmx5',
+'aF9iZWR3YXJyaW9yfPCfm4/vuI986KKr56qd5oiY5aOrfOmTnHzlnKjkuIrljYgxMTowMC0xNDowMOaPkOS6pOaJk+WNoXx0aW1lX25vb24=',
+'aF9wZXJmZWN0fPCfkq985ruh5YiG5pelfOmHkXzpppbmrKHovr7miJDmiYDmnIk56aG5Y2hlY2tib3jlhajli77pgIl8YWxsX25pbmU=',
+'aF9yZWJvdW5kfPCfk4h856ys5LiA5qyh5Y+N5by5fOmTnHzkvZPph43pppbmrKHmr5TliY3kuIDlpKnkuIrljYd8d2VpZ2h0X3VwMQ==',
+'aF90cmlwbGV1cHzwn5S0fOS4ieasoei/nua2qHzph5F86L+e57utM+WkqeS9k+mHjemDveavlOWJjeS4gOWkqeS4iuWNh3x3ZWlnaHRfdXAz',
+'aF9waWdlb2588J+Viu+4j3zlgaXouqvpuL3lrZDnjot86ZOcfOi/kOWKqOWkh+azqOWGmee0r+S4jeaDs+WKqOS9hui/mOaYr+i/kOWKqOS6hnxwaWdlb24=',
+'aF9mb3Jnb3R88J+kt3zlrabkuobkvYbmsqHlrozlhajlraZ86ZOcfOWtpuS5oOWkh+azqOWMheWQq+W/mC3orrDkuI3kvY8t5rKh6K6w5L2PfHN0dWR5X2ZvcmdvdA==',
+'aF9iYWxkfPCfkajigI3wn6ayfOeng+WktOitpuWRinzpk7Z85Zyo5YeM5pmoMDowMC0zOjAw5o+Q5Lqk5omT5Y2hfHRpbWVfYmFsZA==',
+'aF9iaWtlcnzwn5q0fOmqkeihjOS+oHzpk7Z86L+Q5Yqo6K6w5b2V57Sv6K6hNeasoeWMheWQq+mqkeihjHxiaWtlNQ==',
+'aF9oYWxmcmljZXzwn42afOWNiueil+mlreWkp+W4iHzph5F86L+e57utMTTlpKnkuLvpo5/lh4/ljYrlhajpg6jli77pgIl8aGFsZnJpY2VfMTQ=',
+'aF81a2d88J+Or3zljYHmlqTkuYvnuqZ86YeRfOS9k+mHjemZjeiHszc2LjJrZ+S7peS4izrlh4/ph401a2d8d2VpZ2h0XzVrZw==',
+'aF9ub3N1Z2FyMzB88J+MmXznpoHns5bmu6HmnIh86YeRfOi/nue7rTMw5aSp5peg5ZCr57OW6aWu5paZ5oOp572afG5vc3VnYXJfMzA=',
+'aF9ob2xpZGF5fPCfjorohYLml6Xlvanoi58mTnOe5quaVu+WumuagoOS8geiKguaXpeW9k+WkqeaJk+WNoXxob2xpZGF5',
+'aF9yZXBlbnR88J+YiHzmmrTpo5/lv4/mgpR86ZOcfOacieaatOmjn+aDqee9muS9huasoeaXpeWHj+iCpeWFremhueWFqOa7oXxyZXBlbnQ=',
+'aF9jb25maWRlbnR88J+Xo++4j3zoi7Hor63oh6rkv6F86ZOcfOiLseivremineWkluWkh+azqOWMheWQq+eugOWNlS3kuI3pmr4t5Lya5LqGfGVuZ19jb25maWRlbnQ=',
+'aF9vdXRnb2luZ3zwn46SfOWHuumXqOa1quS6hnzpk7Z86L+e57utM+Wkqemlrumjn+iusOW9leaXoOiHquW3seWBmuS4lOavj+aXpeaVo+atpXxvdXRnb2luZw==',
+'aF8xMDd88J+UonwxMDflho3njrB86ZOcfOS9k+mHjeWwj+aVsOmDqOWIhuaBsOWlveS4ui4wN+aIli43MHx3ZWlnaHRfMTA3',
+'aF9ob3Rwb3R88J+NsnzkuIDpob/ngavplIV86ZO2fOWQjOS4gOWkqeWQq+ezlumlruaWmSvngavplIXng6fng6Tov53op4R8aG90cG90X2RheQ==',
+'aF9wZXJmZWN0X3dlZWt84q2QfOWujOe+juS4gOWRqHzpk4Lph5F86L+e57utN+WkqeWbm+adoee6v+WFqOmDqOaJk+WNoXxwZXJmZWN0X3dlZWs=',
+];
+
+function decodeHidden(b64) {
+  try { return decodeURIComponent(escape(atob(b64))).split('|'); } catch(e) { return null; }
+}
+
+function getHiddenAchievements() {
+  return HIDDEN_ENCODED.map(function(e) {
+    var parts = decodeHidden(e);
+    if (!parts) return null;
+    return { id: parts[0], icon: parts[1], name: parts[2], rarity: parts[3], cond: parts[4], checkType: parts[5], hidden: true };
+  }).filter(Boolean);
+}
+
+function checkHidden(ach, derived, rawData) {
+  var days = rawData.days;
+  if (!days.length) return false;
+
+  var last = days[days.length-1];
+  var ct = ach.checkType;
+
+  // Helper: keyword count in a specific field
+  function kwCount(field, keywords, caseSens) {
+    var c = 0;
+    for (var i = 0; i < days.length; i++) {
+      var val = (days[i][field] || '').toLowerCase();
+      for (var j = 0; j < keywords.length; j++) {
+        if (val.indexOf(keywords[j].toLowerCase()) >= 0) { c++; break; }
+      }
+    }
+    return c;
+  }
+
+  // Helper: consecutive days with keyword in field
+  function kwStreak(field, keywords) {
+    var s = 0;
+    for (var i = days.length-1; i >= 0; i--) {
+      var val = (days[i][field] || '').toLowerCase();
+      var found = false;
+      for (var j = 0; j < keywords.length; j++) {
+        if (val.indexOf(keywords[j].toLowerCase()) >= 0) { found = true; break; }
+      }
+      if (found) s++; else break;
+    }
+    return s;
+  }
+
+  // Helper: consecutive days with field containing any keyword
+  function fieldStreak(field, keywords) {
+    var s = 0;
+    for (var i = days.length-1; i >= 0; i--) {
+      var val = (days[i][field] || '').toLowerCase();
+      var found = false;
+      for (var j = 0; j < keywords.length; j++) {
+        if (val.indexOf(keywords[j].toLowerCase()) >= 0) { found = true; break; }
+      }
+      if (found) s++; else break;
+    }
+    return s;
+  }
+
+  switch(ct) {
+    case 'keyword_3day':
+      return kwStreak('dailyNote', ['不打瓦','瓦']) >= 3;
+    case 'keyword_count5':
+      return kwCount('dailyNote', ['女朋友','她','对象']) >= 5;
+    case 'cook_7day':
+      return fieldStreak('dietNote', ['自己做','自己炒','自己煮','自己烤','自己炖','自己拌','自己煎','home made']) >= 7;
+    case 'rabbit_3day':
+      return fieldStreak('dietNote', ['黄瓜','番茄','西红柿','沙拉','生菜','水果','苹果','梨','不吃','代餐','轻食']) >= 3;
+    case 'time_late':
+      if (!last.submittedAt) return false;
+      var h = new Date(last.submittedAt).getHours();
+      return h >= 23 || h < 3;
+    case 'time_early':
+      if (!last.submittedAt) return false;
+      var h = new Date(last.submittedAt).getHours();
+      var m = new Date(last.submittedAt).getMinutes();
+      return (h === 6) || (h === 7 && m <= 30);
+    case 'time_noon':
+      if (!last.submittedAt) return false;
+      var h = new Date(last.submittedAt).getHours();
+      return h >= 11 && h <= 14;
+    case 'time_bald':
+      if (!last.submittedAt) return false;
+      var h = new Date(last.submittedAt).getHours();
+      return h >= 0 && h < 3;
+    case 'all_nine':
+      var all9 = last.dietWater && last.dietNoSnack && last.dietHalfRice && last.dietVeggie && last.dietProtein && last.dietNoLate && last.exDone && last.studyDone && last.engDuolingo;
+      return all9;
+    case 'weight_up1':
+      if (days.length < 2) return false;
+      var prev = days[days.length-2].weight;
+      var cur = last.weight;
+      return prev && cur && cur > prev;
+    case 'weight_up3':
+      if (days.length < 4) return false;
+      for (var i = days.length-3; i <= days.length-1; i++) {
+        var a = days[i-1], b = days[i];
+        if (!a || !b || !a.weight || !b.weight) return false;
+        if (b.weight <= a.weight) return false;
+      }
+      return true;
+    case 'pigeon':
+      return last.exDone && last.exDetail && /(不[太想]|[好累]|累[死了]|休息|偷懒|不想动|懒得)/.test(last.exDetail);
+    case 'study_forgot':
+      return last.studyDone && /(忘[了记]|记不[住得]|没记住|不知道|不记得)/.test(last.studyDetail||'');
+    case 'bike5':
+      var cnt = 0;
+      for (var i = 0; i < days.length; i++) {
+        if (days[i].exDetail && /(骑行|骑车|自行车|单车)/.test(days[i].exDetail)) cnt++;
+      }
+      return cnt >= 5;
+    case 'halfrice_14':
+      var s = 0;
+      for (var i = days.length-1; i >= 0; i--) {
+        if (days[i].dietHalfRice) s++; else break;
+      }
+      return s >= 14;
+    case 'weight_5kg':
+      return derived.minWeight < 76.2;
+    case 'nosugar_30':
+      var nos = 0;
+      for (var i = days.length-1; i >= 0; i--) {
+        if (!days[i].dietPenalty || days[i].dietPenalty.indexOf('含糖') < 0) nos++;
+        else break;
+      }
+      return nos >= 30;
+    case 'holiday':
+      if (!last.submittedAt) return false;
+      var d = new Date(last.submittedAt);
+      var m = d.getMonth()+1, day = d.getDate();
+      // Chinese holidays + weekends
+      var holidays = [
+        '1-1','1-2','1-3', // 元旦
+        '5-1','5-2','5-3', // 劳动节
+        '10-1','10-2','10-3','10-4','10-5','10-6','10-7', // 国庆
+      ];
+      var md = m+'-'+day;
+      var dow = d.getDay();
+      if (dow === 0 || dow === 6) return true;
+      for (var i = 0; i < holidays.length; i++) { if (holidays[i] === md) return true; }
+      // Lunar New Year rough dates (2025-2027)
+      if ((m===1 && day>=28) || (m===2 && day<=15)) return true;
+      return false;
+    case 'repent':
+      if (days.length < 2) return false;
+      var yesterday = days[days.length-2];
+      var hadBinge = yesterday.dietPenalty && yesterday.dietPenalty.indexOf('暴食') >= 0;
+      var todayPerfect = last.dietWater && last.dietNoSnack && last.dietHalfRice && last.dietVeggie && last.dietProtein && last.dietNoLate;
+      return hadBinge && todayPerfect;
+    case 'eng_confident':
+      return last.engExtra && /(简[单单]|不难|容[易易]|会了|懂[了得]|还行|挺[好简])/.test(last.engExtra);
+    case 'outgoing':
+      if (days.length < 3) return false;
+      for (var i = days.length-3; i < days.length; i++) {
+        var d = days[i];
+        var note = (d.dietNote||'').toLowerCase();
+        if (note.indexOf('自己做') >= 0 || note.indexOf('自己炒') >= 0 || note.indexOf('自己煮') >= 0) return false;
+        if (!d.exDetail || !/(散步|走路|逛)/.test(d.exDetail)) return false;
+      }
+      return true;
+    case 'weight_107':
+      if (!last.weight) return false;
+      var dec = (last.weight % 1).toFixed(2);
+      return dec === '0.07' || dec === '0.70';
+    case 'hotpot_day':
+      return last.dietPenalty && last.dietPenalty.indexOf('含糖') >= 0 && (last.dietPenalty.indexOf('火锅') >= 0 || last.dietPenalty.indexOf('烧烤') >= 0);
+    case 'perfect_week':
+      var ps = 0;
+      for (var i = days.length-1; i >= 0; i--) {
+        var d = days[i];
+        if (d.dietWater && d.dietNoSnack && d.dietHalfRice && d.dietVeggie && d.dietProtein && d.dietNoLate && d.exDone && d.studyDone && d.engDuolingo) ps++;
+        else break;
+      }
+      return ps >= 7;
+    default:
+      return false;
+  }
+}
+
 
 const TITLES = [
   { name:'🌱 萌芽行者', days:7 },
@@ -702,12 +913,26 @@ function computeDerived() {
 function checkNewAchievements() {
   const derived = computeDerived();
   const newUnlocks = [];
-  for (const ach of ALL_ACHIEVEMENTS) {
-    if (DATA.unlockedAch.includes(ach.id)) continue;
+  // Check regular achievements
+  for (var i = 0; i < ALL_ACHIEVEMENTS.length; i++) {
+    var ach = ALL_ACHIEVEMENTS[i];
+    if (DATA.unlockedAch.indexOf(ach.id) >= 0) continue;
     try {
       if (ach.check(derived)) {
         DATA.unlockedAch.push(ach.id);
         newUnlocks.push(ach);
+      }
+    } catch(e) {}
+  }
+  // Check hidden achievements
+  var hiddenList = getHiddenAchievements();
+  for (var i = 0; i < hiddenList.length; i++) {
+    var hach = hiddenList[i];
+    if (DATA.unlockedAch.indexOf(hach.id) >= 0) continue;
+    try {
+      if (checkHidden(hach, derived, DATA)) {
+        DATA.unlockedAch.push(hach.id);
+        newUnlocks.push(hach);
       }
     } catch(e) {}
   }
@@ -726,6 +951,7 @@ function submitDay() {
 
   const day = {
     date: today,
+    submittedAt: new Date().toISOString(),
     // Diet
     dietWater: checkStates['diet_water']||false,
     dietNoSnack: checkStates['diet_nosnack']||false,
@@ -847,28 +1073,50 @@ function renderAll() {
 function renderAchievements() {
   const d = computeDerived();
   const grid = document.getElementById('achGrid');
+  var totalPossible = ALL_ACHIEVEMENTS.length;
+  var hiddenUnlocked = 0;
+  for (var i = 0; i < DATA.unlockedAch.length; i++) {
+    if (DATA.unlockedAch[i].indexOf('h_') === 0) hiddenUnlocked++;
+  }
   document.getElementById('achUnlocked').textContent = DATA.unlockedAch.length;
 
-  let html = '';
-  for (const ach of ALL_ACHIEVEMENTS) {
-    const unlocked = DATA.unlockedAch.includes(ach.id);
-    let progress = 0;
+  var html = '';
+  // Render regular achievements
+  for (var i = 0; i < ALL_ACHIEVEMENTS.length; i++) {
+    var ach = ALL_ACHIEVEMENTS[i];
+    var unlocked = DATA.unlockedAch.indexOf(ach.id) >= 0;
+    var progress = 0;
     if (!unlocked) {
-      // Estimate progress
-      if (ach.id.includes('3day')||ach.id.includes('_3day')) progress = Math.min(100, (d.dietPerfectStreak||d.exStreak||0)/3*100);
-      else if (ach.id.includes('7day')||ach.id.includes('_7day')) progress = Math.min(100, (d.dietPerfectStreak||d.exStreak||d.engStreak||0)/7*100);
-      else if (ach.id.includes('14day')||ach.id.includes('_14day')) progress = Math.min(100, (d.exStreak||d.noSugarStreak||0)/14*100);
-      else if (ach.id.includes('30day')||ach.id.includes('_30day')) progress = Math.min(100, (d.exStreak||d.engStreak||d.noSugarStreak||0)/30*100);
+      if (ach.id.indexOf('3day')>=0||ach.id.indexOf('_3day')>=0) progress = Math.min(100, (d.dietPerfectStreak||d.exStreak||0)/3*100);
+      else if (ach.id.indexOf('7day')>=0||ach.id.indexOf('_7day')>=0) progress = Math.min(100, (d.dietPerfectStreak||d.exStreak||d.engStreak||0)/7*100);
+      else if (ach.id.indexOf('14day')>=0||ach.id.indexOf('_14day')>=0) progress = Math.min(100, (d.exStreak||d.noSugarStreak||0)/14*100);
+      else if (ach.id.indexOf('30day')>=0||ach.id.indexOf('_30day')>=0) progress = Math.min(100, (d.exStreak||d.engStreak||d.noSugarStreak||0)/30*100);
     } else { progress = 100; }
 
-    html += `<div class="ach-card ${unlocked?'unlocked':'locked'}">
-      <div class="icon">${ach.icon}</div>
-      <div class="name">${ach.name}</div>
-      <div class="rarity rarity-${ach.rarity==='铜'?'bronze':ach.rarity==='银'?'silver':ach.rarity==='金'?'gold':ach.rarity==='铂金'?'platinum':'legend'}">${'⭐'.repeat(ach.rarity==='铜'?1:ach.rarity==='银'?2:ach.rarity==='金'?3:ach.rarity==='铂金'?4:5)} ${ach.rarity}</div>
-      <div class="cond">${ach.cond}</div>
-      <div class="progress"><div class="bar" style="width:${progress}%"></div></div>
-    </div>`;
+    html += '<div class="ach-card '+(unlocked?'unlocked':'locked')+'">'+
+      '<div class="icon">'+ach.icon+'</div>'+
+      '<div class="name">'+ach.name+'</div>'+
+      '<div class="rarity rarity-'+(ach.rarity==='铜'?'bronze':ach.rarity==='银'?'silver':ach.rarity==='金'?'gold':ach.rarity==='铂金'?'platinum':'legend')+'">'+('⭐'.repeat(ach.rarity==='铜'?1:ach.rarity==='银'?2:ach.rarity==='金'?3:ach.rarity==='铂金'?4:5))+' '+ach.rarity+'</div>'+
+      '<div class="cond">'+ach.cond+'</div>'+
+      '<div class="progress"><div class="bar" style="width:'+progress+'%"></div></div>'+
+      '</div>';
   }
+
+  // Render hidden achievements ONLY if unlocked
+  var hiddenList = getHiddenAchievements();
+  for (var i = 0; i < hiddenList.length; i++) {
+    var hach = hiddenList[i];
+    if (DATA.unlockedAch.indexOf(hach.id) < 0) continue; // Skip locked hidden
+
+    html += '<div class="ach-card unlocked" style="border-color:rgba(255,100,100,.4)">'+
+      '<div class="icon">'+hach.icon+'</div>'+
+      '<div class="name">'+hach.name+' <span style="color:#e05555;font-size:9px">隐藏</span></div>'+
+      '<div class="rarity rarity-'+(hach.rarity==='铜'?'bronze':hach.rarity==='银'?'silver':hach.rarity==='金'?'gold':hach.rarity==='铂金'?'platinum':'legend')+'">'+('⭐'.repeat(hach.rarity==='铜'?1:hach.rarity==='银'?2:hach.rarity==='金'?3:hach.rarity==='铂金'?4:5))+' '+hach.rarity+'</div>'+
+      '<div class="cond">'+hach.cond+'</div>'+
+      '<div class="progress"><div class="bar" style="width:100%"></div></div>'+
+      '</div>';
+  }
+
   grid.innerHTML = html;
 }
 
